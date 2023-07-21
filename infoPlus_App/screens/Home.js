@@ -22,10 +22,10 @@ const Home = ({ navigation }) => {
     const featuresData = [
         {
             id: 1,
-            icon: icons.reload,
+            icon: icons.attendance,
             color: COLORS.red,
             backgroundColor: COLORS.lightRed,
-            description: "Top Up"
+            description: "Absences"
         },
         {
             id: 2,
@@ -36,14 +36,14 @@ const Home = ({ navigation }) => {
         },
 
         {
-            id: 4,
+            id: 3,
             icon: icons.assignment,
             color: COLORS.red,
             backgroundColor: COLORS.lightRed,
             description: "Devoirs"
         },
         {
-            id: 5,
+            id: 4,
             icon: icons.result,
             color: COLORS.white,
             backgroundColor: COLORS.blue,
@@ -51,14 +51,14 @@ const Home = ({ navigation }) => {
         },
 
         {
-            id: 6,
+            id: 5,
             icon: icons.bill,
             color: COLORS.white,
             backgroundColor: COLORS.blue,
             description: "Paiement"
         },
         {
-            id: 7,
+            id: 6,
             icon: icons.rating,
             color: COLORS.red,
             backgroundColor: COLORS.lightRed,
@@ -66,20 +66,47 @@ const Home = ({ navigation }) => {
         },
 
         {
-            id: 8,
+            id: 7,
             icon: icons.send,
             color: COLORS.white,
             backgroundColor: COLORS.blue,
             description: "Demande"
         },
         {
-            id: 9,
+            id: 8,
             icon: icons.more,
             color: COLORS.red,
             backgroundColor: COLORS.lightRed,
             description: "Plus"
         },
     ];
+    const handleFeaturePress = (item) => {
+        switch (item.id) {
+            case 1:
+
+                navigation.navigate('Attendance');
+            case 2:
+
+                navigation.navigate('TimeTable');
+                break;
+            case 3:
+
+                navigation.navigate('Assignment');
+                break;
+            case 4:
+                navigation.navigate('Result');
+                break;
+            case 5:
+                navigation.navigate('Paiement');
+                break;
+            case 6:
+                navigation.navigate('Rate');
+                break;
+
+            default:
+                break;
+        }
+    };
     // const specialPromoData = [
     //     {
     //         id: 1,
@@ -227,7 +254,7 @@ const Home = ({ navigation }) => {
         const renderItem = ({ item }) => (
             <TouchableOpacity
                 style={{ marginBottom: SIZES.padding * 2, width: 60, alignItems: 'center' }}
-                onPress={() => console.log(item.description)}
+                onPress={() => handleFeaturePress(item)}
             >
                 <View
                     style={{

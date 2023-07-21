@@ -107,22 +107,29 @@ const DetailEvent = ({ navigation }) => {
                         style={{
                             width: '100%',
                             flexDirection: 'row',
-                            justifyContent: 'space-between',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
                             paddingTop: 16,
                             paddingLeft: 16,
                         }}>
+
                         <TouchableOpacity onPress={() => navigation.goBack('Home')}>
                             <Entypo
                                 name="chevron-left"
                                 style={{
                                     fontSize: 18,
-                                    color: COLORS.darkgray,
+                                    color: COLORS.primary,
                                     padding: 12,
                                     backgroundColor: COLORS.white,
                                     borderRadius: 10,
                                 }}
                             />
+
                         </TouchableOpacity>
+                        <Text style={{
+                            color: COLORS.primary, fontSize: 18,
+                            fontWeight: '600',
+                        }}>Détail Evènement</Text>
                     </View>
                     <FlatList
                         data={eventDetails.eventPictures ? eventDetails.eventPictures : null}

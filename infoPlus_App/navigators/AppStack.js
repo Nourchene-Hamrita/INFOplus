@@ -9,6 +9,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Tabs from './tabs';
 import { Home } from '../screens';
+import Profile from '../screens/Profile';
+import Result from '../screens/Result';
 
 const Drawer = createDrawerNavigator();
 
@@ -38,7 +40,7 @@ const AppStack = () => {
       />
       <Drawer.Screen
         name="Profil"
-        component={Home}
+        component={Profile}
         options={{
           drawerIcon: ({color}) => (
             <Ionicons name="person-outline" size={22} color={color} />
@@ -56,7 +58,7 @@ const AppStack = () => {
       />
       <Drawer.Screen
         name="Résultat"
-        component={Home}
+        component={Result}
         options={{
           drawerIcon: ({color}) => (
             <Ionicons name="timer-outline" size={22} color={color} />

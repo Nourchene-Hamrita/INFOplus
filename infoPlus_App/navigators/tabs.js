@@ -6,6 +6,13 @@ import { Home, SignUp, Welcome } from '../screens';
 import { COLORS, icons } from "../constants";
 import { createStackNavigator } from '@react-navigation/stack';
 import DetailEvent from '../screens/Events/DetailEvent';
+import Profile from '../screens/Profile';
+import TimeTable from '../screens/TimeTable';
+import Result from '../screens/Result';
+import Assignment from '../screens/Assignment';
+import Paiement from '../screens/Paiement';
+import Rate from '../screens/Rate';
+import Attendance from '../screens/Attendance';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -86,6 +93,37 @@ const HomeStack = () => {
                 component={DetailEvent}
                 options={{ headerShown: false }}
             />
+
+            <Stack.Screen
+                name="TimeTable"
+                component={TimeTable}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Attendance"
+                component={Attendance}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Assignment"
+                component={Assignment}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Result"
+                component={Result}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Paiement"
+                component={Paiement}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Rate"
+                component={Rate}
+                options={{ headerShown: false }}
+            />
         </Stack.Navigator>
     );
 };
@@ -144,7 +182,7 @@ const Tabs = () => {
 
                 ),
             }} />
-            <Tab.Screen name='Profil' component={Welcome} options={{
+            <Tab.Screen name='Profil' component={Profile} options={{
                 tabBarIcon: ({ focused }) => (
                     <Image
                         source={icons.user}

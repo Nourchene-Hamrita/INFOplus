@@ -20,7 +20,8 @@ const timeTable = require("../assets/icons/timeTable.png");
 const assignment = require("../assets/icons/assignment.png");
 const result= require("../assets/icons/result.png");
 const rating=require("../assets/icons/rating.png");
-const search = require("../assets/icons/search.png")
+const search = require("../assets/icons/search.png");
+const attendance=require("../assets/icons/attendance.png");
 
 export default {
     back,
@@ -46,4 +47,5 @@ export default {
     result,
     rating,
     search,
+    attendance,
 }

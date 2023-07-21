@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoute from "./routes/auth.js";
 import usersRoute from "./routes/users.js";
+import internsRoutes from "./routes/interns.js";
 import eventsRoutes from "./routes/events.js";
+import timetableRoutes from "./routes/timetables.js";
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -34,7 +36,9 @@ app.use(express.json());
 
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
+app.use("/api/interns",internsRoutes);
 app.use("/api/events", eventsRoutes);
+app.use("/api/timetables",timetableRoutes);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;
