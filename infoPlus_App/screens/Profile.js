@@ -28,12 +28,12 @@ const Profile = ({ navigation }) => {
                 style={{
                     width: '100%',
                     flexDirection: 'row',
-                    justifyContent: 'flex-start',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
                     paddingTop: 16,
                     paddingLeft: 16,
-                }}>
-
+                }}
+            >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>
                     <Entypo
                         name="chevron-left"
@@ -45,13 +45,18 @@ const Profile = ({ navigation }) => {
                             borderRadius: 10,
                         }}
                     />
-
                 </TouchableOpacity>
-                <Text style={{
-                    color: COLORS.white, fontSize: 20,
-                    fontWeight: '600', paddingLeft: 15
-                }}>Détail Profil</Text>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{
+                        color: COLORS.white,
+                        fontSize: 20,
+                        fontWeight: '600',
+                        paddingRight:30
+                    }}>Mon Profil</Text>
+                </View>
             </View>
+
+
 
             <View style={styles.userInfoSection}>
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
@@ -77,6 +82,10 @@ const Profile = ({ navigation }) => {
                 <View style={styles.row}>
                     <Icon name="phone" color="#fff" size={20} />
                     <Text style={{ color: "#fff", marginLeft: 20, fontSize: 16 }}>+216 {userInfo.details.mobile}</Text>
+                </View>
+                <View style={styles.row}>
+                    <Icon name="calendar-month-outline" color="#fff" size={20} />
+                    <Text style={{ color: "#fff", marginLeft: 20, fontSize: 16 }}>{convertDate(userInfo.details.dob)}</Text>
                 </View>
                 <View style={styles.row}>
                     <Icon name="email" color="#fff" size={20} />

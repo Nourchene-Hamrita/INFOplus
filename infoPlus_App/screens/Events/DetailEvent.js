@@ -294,7 +294,7 @@ const DetailEvent = ({ navigation }) => {
                                     }}
                                 />
                             </View>
-                            <Text style={{ color: COLORS.darkgray }}>{convertDate(eventDetails.start_date)}</Text>
+                            <Text style={{ color: COLORS.darkgray }}>{formatDate(eventDetails.start_date)}</Text>
                         </View>
                         <View
                             style={{

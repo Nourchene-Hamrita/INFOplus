@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema(
         lastName: { type: String },
         mobile: { type: Number },
         address: { type: String },
+        dob:{type:Date},
         age: { type: String },
         gender: { type: String },
         profilePic: { type: String, default: "" },

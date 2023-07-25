@@ -85,6 +85,7 @@ const Home = ({ navigation }) => {
             case 1:
 
                 navigation.navigate('Attendance');
+                break;
             case 2:
 
                 navigation.navigate('TimeTable');
