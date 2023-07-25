@@ -39,5 +39,32 @@ router.post("/upload", upload.single("timetable"), async (req, res) => {
     res.status(500).json({ error: "Failed to upload timetable." });
   }
 });
+// Route to get the PDF file data by timetable ID
+router.get("/:timetableId/pdf", async (req, res) => {
+  try {
+    const { timetableId } = req.params;
+
+    // Find the timetable by ID
+    const timetable = await Timetable.findById(timetableId);
+
+    if (!timetable) {
+      return res.status(404).json({ error: "Timetable not found" });
+    }
+
+    // Set the appropriate response headers to indicate the content type
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${timetable.timetableFileName}"`
+    );
+
+    // Send the PDF data as the response
+    res.send(timetable.timetableFile);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch timetable PDF" });
+  }
+});
+
 
 export default router;

@@ -15,12 +15,12 @@ import {
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFetch from '../../hooks/useFetch';
 import { BASE_URL } from '../../utils/config';
 import { useRoute } from '@react-navigation/native';
 import { COLORS } from '../../constants';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { convertDate, formatDate } from '../../utils/date';
 
 const DetailEvent = ({ navigation }) => {
     const width = Dimensions.get('window').width;
@@ -74,21 +74,6 @@ const DetailEvent = ({ navigation }) => {
         );
     };
 
-    const formatDate = (dateString) => {
-        const dateObj = new Date(dateString);
-
-        const options = {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-        };
-
-        return dateObj.toLocaleString(undefined, options);
-    };
-
-
     return (
         <View>
             <ScrollView>
@@ -111,6 +96,7 @@ const DetailEvent = ({ navigation }) => {
                             alignItems: 'center',
                             paddingTop: 16,
                             paddingLeft: 16,
+                            paddingBottom:15,
                         }}>
 
                         <TouchableOpacity onPress={() => navigation.goBack('Home')}>
@@ -308,7 +294,7 @@ const DetailEvent = ({ navigation }) => {
                                     }}
                                 />
                             </View>
-                            <Text style={{ color: COLORS.darkgray }}>{formatDate(eventDetails.start_date)}</Text>
+                            <Text style={{ color: COLORS.darkgray }}>{convertDate(eventDetails.start_date)}</Text>
                         </View>
                         <View
                             style={{

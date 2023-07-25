@@ -48,7 +48,7 @@ const AppStack = () => {
         }}
       />
       <Drawer.Screen
-        name="Messages"
+        name="Réclamations"
         component={Home}
         options={{
           drawerIcon: ({color}) => (
@@ -61,7 +61,7 @@ const AppStack = () => {
         component={Result}
         options={{
           drawerIcon: ({color}) => (
-            <Ionicons name="timer-outline" size={22} color={color} />
+            <Ionicons name="school-outline" size={22} color={color} />
           ),
         }}
       />

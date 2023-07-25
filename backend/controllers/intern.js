@@ -2,7 +2,7 @@ import { Intern } from "../models/Intern.js";
 import { Timetable } from "../models/Timetable.js";
 
 export const getTimeTable = async (req, res, next) => {
-    const { internId } = req.params;
+  const { internId } = req.params;
 
   try {
     // Find the intern by user ID
@@ -15,11 +15,22 @@ export const getTimeTable = async (req, res, next) => {
     // Fetch timetables for the intern's level
     const timetables = await Timetable.find({ level: intern.level });
 
-    res.status(200).json({ timetables });
+    // Map the timetables to include the PDF URL for each timetable
+    const timetablesWithUrls = timetables.map(timetable => {
+      return {
+        _id: timetable._id,
+        level: timetable.level,
+        timetableFileName: timetable.timetableFileName,
+        pdfUrl: `http://192.168.1.17:8800/api/timetables/${timetable._id}/pdf`, 
+      };
+    });
+
+    res.status(200).json({ timetables: timetablesWithUrls });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch timetables" });
   }
 };
+
 
 
