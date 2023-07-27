@@ -6,6 +6,7 @@ import { Intern } from "../models/Intern.js";
 import { Parent } from "../models/Parent.js";
 import { Teacher } from "../models/Teacher.js";
 import { Company } from "../models/Company.js";
+import { Formation } from '../models/Formation.js';
 
 export const register = async (req, res, next) => {
     try {
@@ -17,6 +18,7 @@ export const register = async (req, res, next) => {
         let newParent;
         let newTeacher;
         let newCompany;
+        let newFormation;
 
 
 
@@ -32,13 +34,35 @@ export const register = async (req, res, next) => {
                 ...req.body,
                 password: hash,
             });
+
+            // Create a new intern and associate it with the user
             newIntern = new Intern({
                 user: newUser._id, // Associate intern user with user document
                 level: req.body.level,
                 promotion: req.body.promotion,
             });
 
+            // Create a new formation and associate it with the intern
+            newFormation = new Formation({
+                nom: "Formation Name", // Set the name of the formation
+                type: "acceleree", // Set the type of the formation (acceleree or diplomante)
+                description: "Formation description", // Set the description of the formation
+                date_deb: new Date(), // Set the start date of the formation
+                date_fin: new Date(), // Set the end date of the formation
+                // Add other properties of the formation as needed
+                reviews: [], // Initialize reviews as an empty array
+                rating: 0, // Initialize the rating as 0
+                numReviews: 0, // Initialize the number of reviews as 0
+                duree: 0, // Set the duration of the formation
+                prix: 0, // Set the price of the formation
+            });
+
+            // Associate the formation with the intern
+            newIntern.formations.push(newFormation._id);
+
+            // Save the new intern and the new formation
             await newIntern.save();
+            await newFormation.save();
         } else if (req.body.role === 'parent') {
             // Create parent user
             newUser = new User({
@@ -101,9 +125,16 @@ export const login = async (req, res, next) => {
             return next(createError(400, "Mot de passe ou nom d'utilisateur erronés!"));
 
         let details = { ...user._doc };
-        if (user.role === 'intern') {
-            const intern = await Intern.findOne({ user: user._id });
-            details = { ...details, level: intern.level, promotion: intern.promotion };
+        if (user.role === "intern") {
+            const intern = await Intern.findOne({ user: user._id }).populate(
+                "formations" // Populate the formations field in the intern document
+            );
+            details = {
+                ...details,
+                level: intern.level,
+                promotion: intern.promotion,
+                formations: intern.formations, // Include the formations information in the response
+            }
         } else if (user.role === 'parent') {
             // Fetch additional data for parent role
             // Add code to retrieve parent-specific data and append it to the details object

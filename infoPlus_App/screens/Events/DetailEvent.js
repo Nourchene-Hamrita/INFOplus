@@ -96,7 +96,7 @@ const DetailEvent = ({ navigation }) => {
                             alignItems: 'center',
                             paddingTop: 16,
                             paddingLeft: 16,
-                            paddingBottom:15,
+                            paddingBottom: 15,
                         }}>
 
                         <TouchableOpacity onPress={() => navigation.goBack('Home')}>
@@ -106,7 +106,7 @@ const DetailEvent = ({ navigation }) => {
                                     fontSize: 18,
                                     color: COLORS.primary,
                                     padding: 12,
-                                    backgroundColor: COLORS.white,
+                                    backgroundColor:'transparent',
                                     borderRadius: 10,
                                 }}
                             />

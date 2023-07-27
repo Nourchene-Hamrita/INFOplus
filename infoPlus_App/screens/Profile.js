@@ -20,10 +20,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 const Profile = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
 
-
-
     return (
-        <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
             <View
                 style={{
                     width: '100%',
@@ -92,12 +90,12 @@ const Profile = ({ navigation }) => {
                     <Text style={{ color: "#fff", marginLeft: 20, fontSize: 16 }}>{userInfo.details.email}</Text>
                 </View>
             </View>
-            <ScrollView style={{
+            <View style={{
                 flex: 1,
                 backgroundColor: '#fff',
                 borderTopLeftRadius: 30,
                 borderTopRightRadius: 30,
-                paddingVertical: 50,
+                paddingVertical: 60,
                 paddingHorizontal: 20,
             }}>
                 <View style={styles.infoBoxWrapper}>
@@ -140,15 +138,15 @@ const Profile = ({ navigation }) => {
                             <Text style={styles.menuItemText}>Réclamations</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple onPress={() => { }}>
+                    {/* <TouchableRipple onPress={() => { }}>
                         <View style={styles.menuItem}>
                             <Icon name="cog" color={COLORS.primary} size={25} />
                             <Text style={styles.menuItemText}>Paramètres</Text>
                         </View>
-                    </TouchableRipple>
+                    </TouchableRipple> */}
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+            </View>
+        </ScrollView>
     );
 };
 
