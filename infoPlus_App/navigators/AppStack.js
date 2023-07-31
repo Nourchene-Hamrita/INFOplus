@@ -1,5 +1,5 @@
 import React from 'react';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import CustomDrawer from '../components/CustomDrawer';
 
@@ -33,7 +33,7 @@ const AppStack = () => {
         name="Accueil"
         component={Tabs}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             <Ionicons name="home-outline" size={22} color={color} />
           ),
         }}
@@ -42,7 +42,7 @@ const AppStack = () => {
         name="Profil"
         component={Profile}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             <Ionicons name="person-outline" size={22} color={color} />
           ),
         }}
@@ -51,7 +51,7 @@ const AppStack = () => {
         name="Réclamations"
         component={Home}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             <Ionicons name="chatbox-ellipses-outline" size={22} color={color} />
           ),
         }}
@@ -60,7 +60,7 @@ const AppStack = () => {
         name="Résultat"
         component={Result}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             <Ionicons name="school-outline" size={22} color={color} />
           ),
         }}
@@ -69,7 +69,7 @@ const AppStack = () => {
         name="Paramètres"
         component={Home}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             <Ionicons name="settings-outline" size={22} color={color} />
           ),
         }}

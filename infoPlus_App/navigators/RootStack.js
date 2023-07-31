@@ -3,10 +3,10 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { View, ActivityIndicator } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
-import { Colors } from '../components/styles';
 import { AuthContext } from '../context/AuthContext';
 import AuthStack from './AuthStack';
 import AppStack from './AppStack';
+import { COLORS } from '../constants';
 
 const theme = {
     ...DefaultTheme,
@@ -26,7 +26,7 @@ const RootStack = () => {
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'canter' }}>
-                <ActivityIndicator size={'large'} />
+                <ActivityIndicator color={COLORS.primary} size={'large'} />
             </View>
 
         )

@@ -7,9 +7,12 @@ import internsRoutes from "./routes/interns.js";
 import eventsRoutes from "./routes/events.js";
 import timetableRoutes from "./routes/timetables.js";
 import formationRoutes from './routes/formations.js';
+import emailRoutes from './routes/emailRoutes.js';
+import reclamationRoutes from './routes/reclamation.js';
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
+
 const app = express();
 
 
@@ -41,6 +44,8 @@ app.use("/api/interns",internsRoutes);
 app.use("/api/events", eventsRoutes);
 app.use("/api/timetables",timetableRoutes);
 app.use("/api/formations",formationRoutes);
+app.use("/api/email",emailRoutes);
+app.use("/api/reclamations",reclamationRoutes);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

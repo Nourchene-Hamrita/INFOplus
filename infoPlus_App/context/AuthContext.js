@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [userToken, setUserToken] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
 
-    
+
     const loggedIn = async (login, password) => {
         setIsLoading(true);
         if (!login || !password) {

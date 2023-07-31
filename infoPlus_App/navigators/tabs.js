@@ -13,6 +13,8 @@ import Assignment from '../screens/Assignment';
 import Paiement from '../screens/Paiement';
 import Rate from '../screens/Rate';
 import Attendance from '../screens/Attendance';
+import Reclamation from '../screens/Reclamations/Reclamation';
+import ReclamationList from '../screens/Reclamations/ReclamationsList';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -122,6 +124,16 @@ const HomeStack = () => {
             <Stack.Screen
                 name="Rate"
                 component={Rate}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Reclamation"
+                component={Reclamation}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="ReclamationList"
+                component={ReclamationList}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>

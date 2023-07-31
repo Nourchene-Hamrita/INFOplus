@@ -12,7 +12,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, FONTS } from '../constants';
 import { AuthContext } from '../context/AuthContext';
-import { convertDate, formatDate } from '../utils/date';
+import { convertDate } from '../utils/date';
 import user from "../assets/images/user.jpg"
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -132,7 +132,7 @@ const Profile = ({ navigation }) => {
                             <Text style={styles.menuItemText}>Paiement</Text>
                         </View>
                     </TouchableRipple>
-                    <TouchableRipple onPress={() => { }}>
+                    <TouchableRipple onPress={() => navigation.navigate('ReclamationList')}>
                         <View style={styles.menuItem}>
                             <Icon name="account-check-outline" color={COLORS.primary} size={25} />
                             <Text style={styles.menuItemText}>Réclamations</Text>

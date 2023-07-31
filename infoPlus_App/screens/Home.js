@@ -103,6 +103,9 @@ const Home = ({ navigation }) => {
             case 6:
                 navigation.navigate('Rate');
                 break;
+            case 7:
+                navigation.navigate('Reclamation');
+                break;
 
             default:
                 break;
