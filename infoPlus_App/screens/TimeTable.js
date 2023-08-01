@@ -1,23 +1,70 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Dimensions, View, Text, ActivityIndicator } from 'react-native';
-import Pdf from 'react-native-pdf';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { StyleSheet, Dimensions, View, Text, ActivityIndicator, FlatList, TouchableOpacity, Linking } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../utils/config';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../constants';
+import * as Animatable from 'react-native-animatable';
+import { Animations } from '../constants/Animations';
+const colorAr = [
+    '#637aff',
+    '#60c5a8',
+    '#CCCCCC',
+    '#ff5454',
+    '#039a83',
+    '#dcb834',
+    '#8f06e4',
+    'skyblue',
+    '#ff4c98',
+]
+const bgColor = (i) => colorAr[i % colorAr.length];
+const openPdf = (pdfUrl) => {
+    // Open the PDF in a full-screen viewer using Linking
+    Linking.openURL(pdfUrl);
+};
+const ListItem = ({ item, index, animation, navigation }) => {
+    return (
+        <Animatable.View
+            animation={animation}
+            duration={1000}
+            delay={index * 300}
+        >
+            <View style={styles.listItem}>
+                <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => openPdf(item.pdfUrl)}>
 
-const TimeTable = () => {
-    const [pdfUrl, setPdfUrl] = useState(null);
+                    <View style={[styles.image, { backgroundColor: bgColor(index) }]} />
+
+                </TouchableOpacity>
+                <View style={styles.detailsContainer}>
+                    <Text style={styles.pdfText}>{item.timetableFileName}</Text>
+                </View>
+            </View>
+        </Animatable.View>
+    )
+};
+const TimeTable = ({ navigation }) => {
+
+    const viewRef = useRef(null);
+    const animation = Animations[Math.floor(Math.random() * Animations.length)]
+    console.log('====================================');
+    console.log(Math.floor(Math.random() * Animations.length), Math.random() * Animations.length, Animations.length);
+    console.log('====================================');
+
+    const renderItem = ({ item, index }) => (
+        <ListItem item={item} index={index} animation={animation} navigation={navigation} />)
+
+    const [timetables, setTimetables] = useState([]);
     const [loading, setLoading] = useState(true);
     const { userInfo } = useContext(AuthContext);
 
     useEffect(() => {
-        // Fetch the PDF URL from the API
-        axios.get(`${BASE_URL}/interns/${userInfo.details._id}/timetables`)
+        // Fetch the timetables from the API
+        axios.get(`${BASE_URL}/users/${userInfo.details._id}/timetables`)
             .then(response => {
-                // Get the first timetable from the response
-                const firstTimetable = response.data.timetables[0];
-                setPdfUrl(firstTimetable.pdfUrl);
+                console.log("API Response:", response.data); // Log the entire response
+                setTimetables(response.data.timetables);
                 setLoading(false);
             })
             .catch(error => {
@@ -27,36 +74,56 @@ const TimeTable = () => {
     }, []);
 
     if (loading) {
-        return <View style={styles.container}>
-            <ActivityIndicator size='large' color={COLORS.primary} />
-            <Text>Loading...</Text></View>;
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size='large' color={COLORS.primary} />
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+    const ListEmptyComponent = () => {
+        const anim = {
+            0: { translateY: 0 },
+            0.5: { translateY: 50 },
+            1: { translateY: 0 },
+        }
+        if (timetables.length === 0) {
+            return (
+                <View style={[styles.listEmpty]}>
+                    <Animatable.Text
+                        animation={anim}
+                        easing="ease-in-out"
+                        duration={3000}
+                        style={{ fontSize: 24 }}
+                        iterationCount="infinite">
+                        No timetables available !
+                    </Animatable.Text>
+                </View>
+            )
+        }
     }
 
-    if (!pdfUrl) {
-        return <View style={styles.container}><Text>Error loading PDF</Text></View>;
-    }
 
-    const source = { uri: pdfUrl, cache: true };
+
+
 
     return (
         <View style={styles.container}>
-            <Pdf
-                trustAllCerts={false}
-                source={source}
-                onLoadComplete={(numberOfPages, filePath) => {
-                    console.log(`Number of pages: ${numberOfPages}`);
-                }}
-                onPageChanged={(page, numberOfPages) => {
-                    console.log(`Current page: ${page}`);
-                }}
-                onError={(error) => {
-                    console.log(error);
-                }}
-                onPressLink={(uri) => {
-                    console.log(`Link pressed: ${uri}`);
-                }}
-                style={styles.pdf}
-            />
+            <Animatable.View
+                ref={viewRef}
+                easing={'ease-in-out'}
+                duration={500}
+                style={styles.container}>
+                <FlatList
+                    data={timetables}
+                    keyExtractor={(item) => item._id}
+                    renderItem={renderItem}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    ListEmptyComponent={ListEmptyComponent}
+                />
+            </Animatable.View>
+
         </View>
     );
 };
@@ -64,15 +131,53 @@ const TimeTable = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         marginTop: 25,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    pdf: {
-        flex: 1,
-        width: Dimensions.get('window').width,
+    timetableItem: {
+        marginVertical: 10,
+        alignItems: 'center',
+    },
+    pdfText: {
+        color: COLORS.primary,
+        fontSize: 16,
+    },
+    name: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: 'black',
+    },
+    separator: {
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: 'rgba(0, 0, 0, .08)',
+    },
+    listEmpty: {
         height: Dimensions.get('window').height,
-    }
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    listItem: {
+        height: 200,
+        width: Dimensions.get('window').width / 2 - 16,
+        backgroundColor: 'white',
+        margin: 8,
+        borderRadius: 10,
+    },
+    image: {
+        height: 150,
+        margin: 5,
+        borderRadius: 10,
+        backgroundColor: COLORS.primary,
+    },
+    detailsContainer: {
+        paddingHorizontal: 16,
+        paddingVertical: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
 });
 
 export default TimeTable;

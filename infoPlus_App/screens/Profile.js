@@ -49,7 +49,7 @@ const Profile = ({ navigation }) => {
                         color: COLORS.white,
                         fontSize: 20,
                         fontWeight: '600',
-                        paddingRight:30
+                        paddingRight: 30
                     }}>Mon Profil</Text>
                 </View>
             </View>
@@ -103,8 +103,13 @@ const Profile = ({ navigation }) => {
                         borderRightColor: '#dddddd',
                         borderRightWidth: 1
                     }]}>
-                        <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
-                        <Caption>{userInfo.details.level}</Caption>
+                        {userInfo.role !== 'intern' ? (<>
+                            <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Spécialité</Title>
+                            <Caption>{userInfo.details.specialty}</Caption></>) :
+                            (<> <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
+                                <Caption>{userInfo.details.level}</Caption></>
+                            )}
+
                     </View>
                     <View style={styles.infoBox}>
                         <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Date d'inscription</Title>
@@ -119,19 +124,41 @@ const Profile = ({ navigation }) => {
                             <Text style={styles.menuItemText}>Résultat</Text>
                         </View>
                     </TouchableRipple>
+                    {userInfo.role !== 'intern' ? (<>
+                        <TouchableRipple onPress={() => { navigation.navigate('TimeTable') }}>
+                            <View style={styles.menuItem}>
 
-                    <TouchableRipple onPress={() => { }}>
-                        <View style={styles.menuItem}>
-                            <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
-                            <Text style={styles.menuItemText}>Absences</Text>
-                        </View>
-                    </TouchableRipple>
-                    <TouchableRipple onPress={() => { }}>
-                        <View style={styles.menuItem}>
-                            <Icon name="credit-card" color={COLORS.primary} size={25} />
-                            <Text style={styles.menuItemText}>Paiement</Text>
-                        </View>
-                    </TouchableRipple>
+                                <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
+                                <Text style={styles.menuItemText}>Emploi du temps</Text>
+                            </View>
+                        </TouchableRipple>
+                    </>)
+                        : (<><TouchableRipple onPress={() => { }}>
+                            <View style={styles.menuItem}>
+                                <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
+                                <Text style={styles.menuItemText}>Absences</Text>
+                            </View>
+                        </TouchableRipple>
+                        </>)}
+
+
+                    {userInfo.role !== 'intern' ? (<>
+
+                        <TouchableRipple onPress={() => { navigation.navigate('Rate') }}>
+                            <View style={styles.menuItem}>
+                                <Icon name="account-star-outline" color={COLORS.primary} size={25} />
+                                <Text style={styles.menuItemText}>Avis</Text>
+                            </View>
+                        </TouchableRipple>
+                    </>)
+                        : (<TouchableRipple onPress={() => { }}>
+                            <View style={styles.menuItem}><> <Icon name="credit-card" color={COLORS.primary} size={25} />
+                                <Text style={styles.menuItemText}>Paiement</Text></>
+
+                            </View>
+                        </TouchableRipple>
+                        )}
+
                     <TouchableRipple onPress={() => navigation.navigate('ReclamationList')}>
                         <View style={styles.menuItem}>
                             <Icon name="account-check-outline" color={COLORS.primary} size={25} />
@@ -182,7 +209,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#dddddd',
         borderTopWidth: 1,
         flexDirection: 'row',
-        height: 100,
+        height: 120,
     },
     infoBox: {
         width: '50%',

@@ -3,6 +3,8 @@ import { Intern } from "../models/Intern.js";
 import { Parent } from "../models/Parent.js";
 import { Teacher } from "../models/Teacher.js";
 import { Company } from "../models/Company.js";
+import { Timetable } from "../models/Timetable.js";
+const BASE_URL = "http://192.168.137.1:8800/api"
 
 export const updateUser = async (req, res, next) => {
     try {
@@ -111,3 +113,45 @@ export const getUsers = async (req, res, next) => {
         next(err);
     }
 }
+
+
+export const getTimeTable = async (req, res, next) => {
+    const { userId } = req.params;
+
+    try {
+        // Find the user by ID in both Intern and Teacher collections
+        const intern = await Intern.findOne({ user: userId });
+        const teacher = await Teacher.findOne({ user: userId });
+
+        if (!intern && !teacher) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        let level;
+
+        if (intern) {
+            level = intern.levels;
+        } else if (teacher) {
+            level = teacher.levels; // Use 'teacher.levels' instead of 'teacher.profil'
+        }
+
+        // Fetch timetables for the user's level
+        const timetables = await Timetable.find({ level });
+
+        // Map the timetables to include the PDF URL for each timetable
+        const timetablesWithUrls = timetables.map(timetable => {
+            return {
+                _id: timetable._id,
+                level: timetable.level,
+                timetableFileName: timetable.timetableFileName,
+                pdfUrl: `${BASE_URL}/timetables/${timetable._id}/pdf`,
+            };
+        });
+
+        res.status(200).json({ timetables: timetablesWithUrls });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch timetables" });
+    }
+};
+

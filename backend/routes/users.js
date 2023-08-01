@@ -4,6 +4,7 @@ import {
     deleteUser,
     getUser,
     getUsers,
+    getTimeTable,
 } from "../controllers/user.js";
 import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
 
@@ -32,5 +33,6 @@ router.get("/:id", verifyUser, getUser);
 
 //GET ALL
 router.get("/", verifyAdmin, getUsers);
+router.get("/:userId/timetables", getTimeTable);
 
 export default router;

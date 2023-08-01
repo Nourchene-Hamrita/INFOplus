@@ -9,6 +9,7 @@ import KeyboardAvoiding from '../components/KeyboardAvoiding';
 import axios from 'axios';
 import { BASE_URL } from '../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Animatable from 'react-native-animatable';
 
 const Rate = ({ navigation }) => {
     const maxRating = [1, 2, 3, 4, 5];
@@ -124,13 +125,13 @@ const Rate = ({ navigation }) => {
                         fontWeight: '600', marginTop: 7
                     }}>FeedBack</Text>
                 </View>
-                <View style={styles.centeredTextContainer}>
+                <Animatable.View style={styles.centeredTextContainer} animation="flipInX">
                     <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
                         Évaluez Votre Expérience
                     </Text>
 
-                </View>
-                <View style={styles.content}>
+                </Animatable.View>
+                <Animatable.View style={styles.content} animation="slideInUp">
                     <Text style={{ ...FONTS.h4, color: COLORS.gray }}>
                         Êtes-vous satisfait(e) ?{" "}
                     </Text>
@@ -199,7 +200,7 @@ const Rate = ({ navigation }) => {
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </Animatable.View>
             </SafeAreaView>
         </KeyboardAvoiding>
     );

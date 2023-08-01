@@ -330,7 +330,7 @@ const Home = ({ navigation }) => {
                     <Text style={{ ...FONTS.h3, color: COLORS.blue }}>Evènements</Text>
                 </View>
                 <TouchableOpacity
-                    onPress={() => console.log("View All")}
+                    onPress={() => navigation.navigate("ViewAll")}
                 >
                     <Text style={{ color: COLORS.gray, ...FONTS.body4 }}>Tout voir </Text>
                 </TouchableOpacity>

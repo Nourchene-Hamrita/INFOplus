@@ -1,9 +1,10 @@
-import React, { useState,useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Dimensions, SafeAreaView, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Entypo from 'react-native-vector-icons/Entypo';
 import KeyboardAvoiding from '../../components/KeyboardAvoiding';
 import { COLORS, SIZES, FONTS, icons, images } from "../../constants";
+import * as Animatable from 'react-native-animatable';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { BASE_URL } from '../../utils/config';
@@ -26,13 +27,13 @@ const Reclamation = ({ navigation }) => {
 
             // Make the API call
             const response = await axios.post(
-                
+
                 `${BASE_URL}/reclamations/createReclamation`,
                 {
                     description: comment, // Use the 'comment' as the 'description' for the reclamation
                     subject: subject, // Include the subject field with the provided value
                     intern: userInfo.details._id, // Add the intern field with the provided value
-                   
+
                 }
             );
 
@@ -70,18 +71,21 @@ const Reclamation = ({ navigation }) => {
                     <Text style={{
                         color: COLORS.primary, fontSize: 18,
                         fontWeight: '600', marginTop: 7
-                    }}>Réclamation</Text>
+                    }}>Réclamations</Text>
                 </View>
                 {/* Properly display the image */}
                 <View style={styles.imageContainer}>
-                    <Image
+
+                    <Animatable.Image
+                        animation="bounceIn"
+                        duration={1500}
                         source={images.reclamation}
                         resizeMode="cover"
                         style={styles.image}
                     />
                 </View>
 
-                <View style={styles.content}>
+                <Animatable.View style={styles.content} animation="fadeInUpBig">
                     <View style={styles.subjectBox}>
                         <TextInput
                             placeholder="Sujet de la réclamation"
@@ -117,7 +121,7 @@ const Reclamation = ({ navigation }) => {
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </Animatable.View>
             </SafeAreaView>
         </KeyboardAvoiding>
     );

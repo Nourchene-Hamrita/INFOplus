@@ -9,23 +9,33 @@ const upload = multer({ storage });
 // Import the Timetable and Intern models
 import { Timetable } from "../models/Timetable.js";
 import { Intern } from "../models/Intern.js";
+import { Teacher } from "../models/Teacher.js";
 
 // Route to upload timetable
 router.post("/upload", upload.single("timetable"), async (req, res) => {
   try {
-    const { internId, level } = req.body;
+    const { userId, level, role } = req.body;
     const { originalname, buffer } = req.file;
 
-    // Find the intern user by the userId
-    const intern = await Intern.findOne({ user: internId });
+    let user;
 
-    if (!intern) {
-      return res.status(404).json({ error: "Intern user not found." });
+    if (role === 'intern') {
+      // Find the intern user by the userId
+      user = await Intern.findOne({ user: userId });
+    } else if (role === 'teacher') {
+      // Find the teacher user by the userId
+      user = await Teacher.findOne({ user: userId });
+    } else {
+      return res.status(400).json({ error: "Invalid role." });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: `${role} user not found.` });
     }
 
     // Create a new Timetable document and save the uploaded file
     const timetable = new Timetable({
-      intern: intern.user, // Save the reference to the intern user
+      user: user.user, // Save the reference to the user (intern or teacher)
       level,
       timetableFile: buffer,
       timetableFileName: originalname,

@@ -16,6 +16,8 @@ const TeacherSchema = new mongoose.Schema(
             type: String,
             enum: ["anglais", "francais", "info"],
         },
+        levels: [{ type: String }],
+
     },
     { timestamps: true }
 );

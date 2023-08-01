@@ -11,6 +11,7 @@ import Tabs from './tabs';
 import { Home } from '../screens';
 import Profile from '../screens/Profile';
 import Result from '../screens/Result';
+import Reclamation from '../screens/Reclamations/Reclamation';
 
 const Drawer = createDrawerNavigator();
 
@@ -49,7 +50,7 @@ const AppStack = () => {
       />
       <Drawer.Screen
         name="Réclamations"
-        component={Home}
+        component={Reclamation}
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="chatbox-ellipses-outline" size={22} color={color} />

@@ -15,6 +15,7 @@ import Rate from '../screens/Rate';
 import Attendance from '../screens/Attendance';
 import Reclamation from '../screens/Reclamations/Reclamation';
 import ReclamationList from '../screens/Reclamations/ReclamationsList';
+import ViewAll from '../screens/Events/ViewAll';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -93,6 +94,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="DetailEvent"
                 component={DetailEvent}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="ViewAll"
+                component={ViewAll}
                 options={{ headerShown: false }}
             />
 
