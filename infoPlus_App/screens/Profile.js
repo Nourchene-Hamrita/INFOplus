@@ -158,7 +158,7 @@ const Profile = ({ navigation }) => {
                         </TouchableRipple>
                     </>)
                         : (<>
-                            <TouchableRipple onPress={() => { }}>
+                            <TouchableRipple onPress={() => { navigation.navigate('Paiement') }}>
                                 <View style={styles.menuItem}>
                                     <Icon name="credit-card" color={COLORS.primary} size={25} />
                                     <Text style={styles.menuItemText}>Paiement</Text>

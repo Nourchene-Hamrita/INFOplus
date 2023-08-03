@@ -18,6 +18,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/config';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Animatable from 'react-native-animatable';
+import Feather from 'react-native-vector-icons/Feather';
 
 
 const Paiement = ({ navigation }) => {
@@ -129,15 +131,12 @@ const Paiement = ({ navigation }) => {
                         borderRightColor: '#dddddd',
                         borderRightWidth: 1
                     }]}>
-                        {userInfo.role !== 'intern' ? (<>
-                            <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Spécialité</Title>
-                            <Caption>{userInfo.details.specialty}</Caption>
-                        </>) :
-                            (<>
+                       
+                            
                                 <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
                                 <Caption>{userInfo.details.level}</Caption>
-                            </>
-                            )}
+                            
+                        
 
                     </View>
                     <View style={styles.infoBox}>
@@ -152,12 +151,13 @@ const Paiement = ({ navigation }) => {
                             style={{
                                 marginVertical: SIZES.base,
                                 width: SIZES.width / 1.2,
+                                
                             }}
-                            onPress={() => navigation.navigate('DetailEvent')}
+
                         >
                             <View
                                 style={{
-                                    height: 100,
+                                    height: 130,
                                     borderTopLeftRadius: 20,
                                     borderTopRightRadius: 20,
                                     backgroundColor: COLORS.primary
@@ -171,9 +171,28 @@ const Paiement = ({ navigation }) => {
                                         height: "100%",
                                         borderTopLeftRadius: 20,
                                         borderTopRightRadius: 20,
+                                        padding: SIZES.padding,
+
 
                                     }}>
-                                    <Text>hhh</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                        <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Payé </Text>
+                                        <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.montant} </Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                        <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Restant </Text>
+                                        <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix - payment.montant} </Text>
+                                    </View>
+                                 
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                        <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de Paiement</Text>
+                                        <Text style={{ ...FONTS.h4, color: COLORS.white }}>{convertDate(payment.updatedAt)} </Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                        <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Total </Text>
+                                        <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix} </Text>
+                                    </View>
+
 
                                 </LinearGradient>
 
@@ -205,8 +224,31 @@ const Paiement = ({ navigation }) => {
                                     elevation: 5
                                 }}
                             >
-                                <Text style={{ ...FONTS.h4, color: COLORS.black }} numberOfLines={1}>title</Text>
-                                <Text style={{ ...FONTS.body4, color: COLORS.black }} numberOfLines={2}>description</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.black }} numberOfLines={1}>Formation</Text>
+                                    {payment.formation.prix === payment.montant ?
+                                        <Animatable.View
+                                            animation="bounceIn"
+                                        >
+                                            <Feather
+                                                name="check-circle"
+                                                color="green"
+                                                size={23}
+                                            />
+                                        </Animatable.View>
+                                        : <Animatable.View
+                                            animation="bounceIn"
+                                        >
+                                            <Feather
+                                                name="x-circle"
+                                                color="red"
+                                                size={23}
+                                            />
+                                        </Animatable.View>}
+                                </View>
+                                <Text style={{ ...FONTS.body4, color: COLORS.black }} numberOfLines={2}>{payment.formation.nom}</Text>
+
+
                             </View>
                         </TouchableOpacity>
                     ))

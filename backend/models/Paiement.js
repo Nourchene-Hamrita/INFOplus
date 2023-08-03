@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 
 const PaiementSchema = new mongoose.Schema(
     {
-        montant: { type: String, required: true },
+        montant: {
+            type: Number,
+            required: true,
+        },
+
         intern: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Intern", required: true
