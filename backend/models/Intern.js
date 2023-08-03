@@ -15,6 +15,12 @@ const InternSchema = new mongoose.Schema(
                 ref: "Formation",
             },
         ],
+        attendance: [
+            {
+              date: { type: Date, required: true }, // Date of the attendance session
+              isPresent: { type: Boolean, default: false }, // Whether the intern is present or not
+            },
+          ],
     },
     { timestamps: true }
 );

@@ -131,12 +131,12 @@ const Paiement = ({ navigation }) => {
                         borderRightColor: '#dddddd',
                         borderRightWidth: 1
                     }]}>
-                       
-                            
-                                <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
-                                <Caption>{userInfo.details.level}</Caption>
-                            
-                        
+
+
+                        <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
+                        <Caption>{userInfo.details.level}</Caption>
+
+
 
                     </View>
                     <View style={styles.infoBox}>
@@ -151,7 +151,7 @@ const Paiement = ({ navigation }) => {
                             style={{
                                 marginVertical: SIZES.base,
                                 width: SIZES.width / 1.2,
-                                
+
                             }}
 
                         >
@@ -183,7 +183,7 @@ const Paiement = ({ navigation }) => {
                                         <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Restant </Text>
                                         <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix - payment.montant} </Text>
                                     </View>
-                                 
+
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
                                         <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de Paiement</Text>
                                         <Text style={{ ...FONTS.h4, color: COLORS.white }}>{convertDate(payment.updatedAt)} </Text>
