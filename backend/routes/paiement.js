@@ -7,7 +7,7 @@ import {
   updatePaymentById,
   deletePaymentById
 } from "../controllers/paiement.js";
-import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
+import { protect, verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
@@ -26,7 +26,7 @@ router.get("/find/:id", getPaymentById);
 //GET ALL
 
 router.get("/",verifyAdmin, getAllPayments);
-router.get('/getPaymentsByIntern/:internId',verifyUser, getPaymentsByIntern);
+router.get('/getPaymentsByIntern/:internId', getPaymentsByIntern);
 
 
 
