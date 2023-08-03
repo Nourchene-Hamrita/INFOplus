@@ -105,9 +105,12 @@ const Profile = ({ navigation }) => {
                     }]}>
                         {userInfo.role !== 'intern' ? (<>
                             <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Spécialité</Title>
-                            <Caption>{userInfo.details.specialty}</Caption></>) :
-                            (<> <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
-                                <Caption>{userInfo.details.level}</Caption></>
+                            <Caption>{userInfo.details.specialty}</Caption>
+                        </>) :
+                            (<>
+                                <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
+                                <Caption>{userInfo.details.level}</Caption>
+                            </>
                             )}
 
                     </View>
@@ -124,22 +127,25 @@ const Profile = ({ navigation }) => {
                             <Text style={styles.menuItemText}>Résultat</Text>
                         </View>
                     </TouchableRipple>
-                    {userInfo.role !== 'intern' ? (<>
-                        <TouchableRipple onPress={() => { navigation.navigate('TimeTable') }}>
-                            <View style={styles.menuItem}>
+                    {userInfo.role !== 'intern' ? (
+                        <>
+                            <TouchableRipple onPress={() => { navigation.navigate('TimeTable') }}>
+                                <View style={styles.menuItem}>
 
-                                <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
-                                <Text style={styles.menuItemText}>Emploi du temps</Text>
-                            </View>
-                        </TouchableRipple>
-                    </>)
-                        : (<><TouchableRipple onPress={() => { }}>
-                            <View style={styles.menuItem}>
-                                <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
-                                <Text style={styles.menuItemText}>Absences</Text>
-                            </View>
-                        </TouchableRipple>
-                        </>)}
+                                    <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
+                                    <Text style={styles.menuItemText}>Emploi du temps</Text>
+                                </View>
+                            </TouchableRipple>
+                        </>)
+                        : (
+                            <>
+                                <TouchableRipple onPress={() => { }}>
+                                    <View style={styles.menuItem}>
+                                        <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
+                                        <Text style={styles.menuItemText}>Absences</Text>
+                                    </View>
+                                </TouchableRipple>
+                            </>)}
 
 
                     {userInfo.role !== 'intern' ? (<>
@@ -151,12 +157,15 @@ const Profile = ({ navigation }) => {
                             </View>
                         </TouchableRipple>
                     </>)
-                        : (<TouchableRipple onPress={() => { }}>
-                            <View style={styles.menuItem}><> <Icon name="credit-card" color={COLORS.primary} size={25} />
-                                <Text style={styles.menuItemText}>Paiement</Text></>
+                        : (<>
+                            <TouchableRipple onPress={() => { }}>
+                                <View style={styles.menuItem}>
+                                    <Icon name="credit-card" color={COLORS.primary} size={25} />
+                                    <Text style={styles.menuItemText}>Paiement</Text>
 
-                            </View>
-                        </TouchableRipple>
+                                </View>
+                            </TouchableRipple>
+                        </>
                         )}
 
                     <TouchableRipple onPress={() => navigation.navigate('ReclamationList')}>

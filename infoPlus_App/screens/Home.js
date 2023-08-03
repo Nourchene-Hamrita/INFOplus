@@ -12,6 +12,7 @@ import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { AuthContext } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/config';
+import * as Animatable from 'react-native-animatable';
 
 const Home = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
@@ -228,7 +229,7 @@ const Home = ({ navigation }) => {
     function renderBanner() {
         return (
 
-            <View
+            <Animatable.View animation="bounceIn"
                 style={{
                     height: 150,
                     borderRadius: 20,
@@ -244,7 +245,7 @@ const Home = ({ navigation }) => {
                         borderRadius: 20
                     }}
                 />
-            </View>
+            </Animatable.View>
         )
     };
     function renderFeatures() {

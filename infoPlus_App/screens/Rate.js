@@ -19,7 +19,7 @@ const Rate = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
 
 
-    const [formations, setFormations] = useState([]); // State variable to store formations
+    const [formations, setFormations] = useState([]);
     const [selectedFormation, setSelectedFormation] = useState(null); // State variable to store selected formation
     const pickerRef = useRef();
 
@@ -38,21 +38,50 @@ const Rate = ({ navigation }) => {
 
 
     useEffect(() => {
-        // Check if userInfo.details and userInfo.details.formations exist
-        if (userInfo && userInfo.details && userInfo.details.formations) {
-            // Make sure userInfo.details.formations is an array
-            if (Array.isArray(userInfo.details.formations)) {
-                setFormations(userInfo.details.formations);
-                console.log(userInfo.details.formations); // Check the fetched formations in the console
-                setSelectedFormation(userInfo.details.formations[0]?._id); // Set the default selected formation
-            } else {
-                console.log('Formations data is not an array:', userInfo.details.formations);
+        // Function to fetch intern's formations
+        const fetchInternFormations = async () => {
+            try {
+                // Check if userInfo.details and userInfo.details.formations exist
+                if (userInfo && userInfo.details && userInfo.details.formations) {
+                    // Make sure userInfo.details.formations is an array
+                    if (Array.isArray(userInfo.details.formations)) {
+                        setFormations(userInfo.details.formations);
+                        setSelectedFormation(userInfo.details.formations[0]?._id); // Set the default selected formation
+                    } else {
+                        console.log('Formations data is not an array:', userInfo.details.formations);
+                    }
+                } else {
+                    console.log('Formations data is missing in userInfo:', userInfo);
+                }
+            } catch (error) {
+                console.log('Error fetching intern formations:', error);
             }
+        };
+
+        // Function to fetch all formations
+        const fetchAllFormations = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/formations/getAll`);
+                if (response.status === 200) {
+                    setFormations(response.data); // Response.data should contain the array of formations directly
+                    setSelectedFormation(response.data[0]?._id);
+                } else {
+                    console.log('Failed to fetch formations data:', response.data.message);
+                }
+            } catch (error) {
+                console.log('Error fetching formations data:', error);
+            }
+        };
+
+        // Check if userInfo.role is 'intern' and fetch intern's formations if true
+        if (userInfo && userInfo.role === 'intern') {
+            // Fetch intern's formations
+            fetchInternFormations();
         } else {
-            console.log('Formations data is missing in userInfo:', userInfo);
+            // Fetch all formations when the user is not an intern
+            fetchAllFormations();
         }
     }, [userInfo]);
-
 
 
 

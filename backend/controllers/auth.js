@@ -18,9 +18,6 @@ export const register = async (req, res, next) => {
         let newParent;
         let newTeacher;
         let newCompany;
-        let newFormation;
-
-
 
         if (req.body.role === 'admin') {
             // Create admin user
@@ -35,6 +32,9 @@ export const register = async (req, res, next) => {
                 password: hash,
             });
 
+            // Save the new user first
+            newUser = await newUser.save();
+
             // Create a new intern and associate it with the user
             newIntern = new Intern({
                 user: newUser._id, // Associate intern user with user document
@@ -42,37 +42,36 @@ export const register = async (req, res, next) => {
                 promotion: req.body.promotion,
             });
 
-            // Create a new formation and associate it with the intern
-            newFormation = new Formation({
-                nom: "Formation Name", // Set the name of the formation
-                type: "acceleree", // Set the type of the formation (acceleree or diplomante)
-                description: "Formation description", // Set the description of the formation
-                date_deb: new Date(), // Set the start date of the formation
-                date_fin: new Date(), // Set the end date of the formation
-                // Add other properties of the formation as needed
-                reviews: [], // Initialize reviews as an empty array
-                rating: 0, // Initialize the rating as 0
-                numReviews: 0, // Initialize the number of reviews as 0
-                duree: 0, // Set the duration of the formation
-                prix: 0, // Set the price of the formation
-            });
+            // Check if formationIds are provided in the request body
+            if (req.body.formationIds && Array.isArray(req.body.formationIds)) {
+                for (const formationId of req.body.formationIds) {
+                    const formation = await Formation.findById(formationId);
 
-            // Associate the formation with the intern
-            newIntern.formations.push(newFormation._id);
+                    if (!formation) {
+                        return res.status(404).json({ message: `Formation with ID ${formationId} not found` });
+                    }
+
+                    // Push the formation ID into the formations array of the intern user
+                    newIntern.formations.push(formationId);
+                }
+            }
 
             // Save the new intern and the new formation
             await newIntern.save();
-            await newFormation.save();
         } else if (req.body.role === 'parent') {
             // Create parent user
             newUser = new User({
                 ...req.body,
                 password: hash,
             });
-            newIntern = new Parent({
+
+            // Save the new user first
+            newUser = await newUser.save();
+
+            // Create new parent and associate it with the user
+            newParent = new Parent({
                 user: newUser._id, // Associate parent user with user document
                 intern: newIntern.user,
-
             });
 
             await newParent.save();
@@ -82,12 +81,18 @@ export const register = async (req, res, next) => {
                 ...req.body,
                 password: hash,
             });
+
+            // Save the new user first
+            newUser = await newUser.save();
+
             newTeacher = new Teacher({
                 user: newUser._id, // Associate teacher user with user document
                 salary: req.body.salary,
                 specialty: req.body.specialty,
                 profil: req.body.profil,
+                levels: req.body.levels, // Add the levels data to the teacher document
             });
+
             await newTeacher.save();
         } else if (req.body.role === 'company') {
             // Create company user
@@ -95,23 +100,29 @@ export const register = async (req, res, next) => {
                 ...req.body,
                 password: hash,
             });
+
+            // Save the new user first
+            newUser = await newUser.save();
+
             newCompany = new Company({
                 user: newUser._id, // Associate company user with user document
                 business_sector: req.body.business_sector,
                 description: req.body.description,
             });
+
             await newCompany.save();
         } else {
             // Handle invalid role
             return res.status(400).json({ message: 'Invalid role' });
         }
 
-        await newUser.save();
         res.status(200).send('User has been created.');
     } catch (err) {
         next(err);
     }
 };
+
+
 export const login = async (req, res, next) => {
     try {
         const user = await User.findOne({ login: req.body.login });

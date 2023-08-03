@@ -1,6 +1,6 @@
 import { Reclamation } from "../models/Reclamation.js";
 import { User } from "../models/User.js";
-import { Intern } from "../models/Intern.js"; 
+import { Intern } from "../models/Intern.js";
 
 // Create a new reclamation
 export const createReclamation = async (req, res) => {
@@ -144,7 +144,7 @@ export const getReclamationsByUserId = async (req, res) => {
     }
 
     // Find reclamations associated with the intern ID
-    const reclamations = await Reclamation.find({ intern: intern._id });
+    const reclamations = await Reclamation.find({ intern: intern.user });
 
     res.status(200).json(reclamations);
   } catch (error) {

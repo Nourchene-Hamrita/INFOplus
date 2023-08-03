@@ -130,7 +130,7 @@ export const getTimeTable = async (req, res, next) => {
         let level;
 
         if (intern) {
-            level = intern.levels;
+            level = intern.level;
         } else if (teacher) {
             level = teacher.levels; // Use 'teacher.levels' instead of 'teacher.profil'
         }

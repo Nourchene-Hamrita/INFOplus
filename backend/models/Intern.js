@@ -7,7 +7,7 @@ const InternSchema = new mongoose.Schema(
             ref: "User",
             required: true, // Ensure the user is required when creating an intern
         },
-        levels: {  levels: [{ type: String }], },
+        level: { type: String } ,
         promotion: { type: String },
         formations: [
             {
