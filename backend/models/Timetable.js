@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const TimetableSchema = new mongoose.Schema(
     {
         user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
         },
         level: {
             type: String,

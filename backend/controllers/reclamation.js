@@ -28,7 +28,7 @@ export const createReclamation = async (req, res) => {
     const reclamation = new Reclamation({
       description,
       date,
-      intern: internn._id,
+      intern: internn.user,
       subject,
       state: state || "Pending", // Set default state to 'Pending' if not provided in the request body
     });

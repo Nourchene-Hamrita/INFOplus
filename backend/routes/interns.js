@@ -15,18 +15,18 @@ import { verifyAdmin, verifyToken, verifyUser } from "../utils/verifyToken.js";
 const router = express.Router();
 
 //CREATE
-router.post("/:internId/attendance", verifyAdmin, createAttendanceRecord);
+router.post("/attendance/:internId/:formationId", verifyAdmin, createAttendanceRecord);
 
 //UPDATE
-router.put("/:internId/attendance/:date", verifyAdmin, updateAttendanceRecord);
+router.put("/attendance/:internId/:formationId", verifyAdmin, updateAttendanceRecord);
 //DELETE
-router.delete("/:internId/attendance/:date", verifyAdmin, deleteAttendanceRecord);
+router.delete("/attendance/:internId/:formationId", verifyAdmin, deleteAttendanceRecord);
 //GET
 
 router.get("/:internId/attendance", getAttendanceRecords);
 //GET ALL
 
-router.get("/:internId/attendance/:date", getAttendanceRecordForDate);
+router.get("/:internId/attendance/date", getAttendanceRecordForDate);
 router.get("/attendance/summary", verifyAdmin, getAllInternsOverallAttendanceSummary);
 router.get("/:internId/attendance/summary", getOverallAttendanceSummary);
 router.get('/attendance/report', getAttendanceReport);

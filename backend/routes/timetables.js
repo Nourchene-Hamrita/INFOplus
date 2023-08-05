@@ -1,15 +1,15 @@
 import express from "express";
 import multer from "multer";
+import { Timetable } from "../models/Timetable.js";
+import { Intern } from "../models/Intern.js";
+import { Teacher } from "../models/Teacher.js";
 const router = express.Router();
 
 // Configure multer storage
 const storage = multer.memoryStorage(); // Store files in memory as Buffers
 const upload = multer({ storage });
 
-// Import the Timetable and Intern models
-import { Timetable } from "../models/Timetable.js";
-import { Intern } from "../models/Intern.js";
-import { Teacher } from "../models/Teacher.js";
+
 
 // Route to upload timetable
 router.post("/upload", upload.single("timetable"), async (req, res) => {

@@ -139,7 +139,7 @@ const Profile = ({ navigation }) => {
                         </>)
                         : (
                             <>
-                                <TouchableRipple onPress={() => { }}>
+                                <TouchableRipple onPress={() => { navigation.navigate('Attendance') }}>
                                     <View style={styles.menuItem}>
                                         <Icon name="calendar-multiselect" color={COLORS.primary} size={25} />
                                         <Text style={styles.menuItemText}>Absences</Text>

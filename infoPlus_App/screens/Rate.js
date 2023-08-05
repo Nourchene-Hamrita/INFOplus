@@ -57,31 +57,35 @@ const Rate = ({ navigation }) => {
                 console.log('Error fetching intern formations:', error);
             }
         };
-
-        // Function to fetch all formations
-        const fetchAllFormations = async () => {
-            try {
-                const response = await axios.get(`${BASE_URL}/formations/getAll`);
-                if (response.status === 200) {
-                    setFormations(response.data); // Response.data should contain the array of formations directly
-                    setSelectedFormation(response.data[0]?._id);
-                } else {
-                    console.log('Failed to fetch formations data:', response.data.message);
-                }
-            } catch (error) {
-                console.log('Error fetching formations data:', error);
+    
+        // Check if userInfo is available
+        if (userInfo) {
+            // Check if userInfo.role is 'intern'
+            if (userInfo.role === 'intern') {
+                // Fetch intern's formations
+                fetchInternFormations();
+            } else {
+                // Function to fetch all formations
+                const fetchAllFormations = async () => {
+                    try {
+                        const response = await axios.get(`${BASE_URL}/formations/getAll`);
+                        if (response.status === 200) {
+                            setFormations(response.data); // Response.data should contain the array of formations directly
+                            setSelectedFormation(response.data[0]?._id);
+                        } else {
+                            console.log('Failed to fetch formations data:', response.data.message);
+                        }
+                    } catch (error) {
+                        console.log('Error fetching formations data:', error);
+                    }
+                };
+    
+                // Fetch all formations when the user is not an intern
+                fetchAllFormations();
             }
-        };
-
-        // Check if userInfo.role is 'intern' and fetch intern's formations if true
-        if (userInfo && userInfo.role === 'intern') {
-            // Fetch intern's formations
-            fetchInternFormations();
-        } else {
-            // Fetch all formations when the user is not an intern
-            fetchAllFormations();
         }
     }, [userInfo]);
+    
 
 
 

@@ -20,22 +20,33 @@ import { BASE_URL } from '../utils/config';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 const Paiement = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
     const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
 
     // Function to fetch payments data
     const fetchPayments = async () => {
         try {
             const response = await fetch(`${BASE_URL}/payments/getPaymentsByIntern/${userInfo.details._id}`);
+            if (!response.ok) {
+                setError('Failed to fetch attendance summary');
+                setLoading(false);
+                return;
+            }
             const data = await response.json();
             console.log(data);
             setPayments(data);
+            setLoading(false);
         } catch (error) {
             console.log('Error fetching payments data:', error);
+            setLoading(false);
+
         }
     };
 
@@ -45,7 +56,7 @@ const Paiement = ({ navigation }) => {
     }, []);
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <View
                 style={{
                     width: '100%',
@@ -118,13 +129,13 @@ const Paiement = ({ navigation }) => {
                     <Text style={{ color: "#fff", marginLeft: 20, fontSize: 16 }}>{userInfo.details.email}</Text>
                 </View>
             </View>
-            <View style={{
+            <ScrollView style={{
                 flex: 1,
                 backgroundColor: '#fff',
                 borderTopLeftRadius: 30,
                 borderTopRightRadius: 30,
-                paddingVertical: 60,
-                paddingHorizontal: 20,
+                paddingVertical:5,
+                paddingHorizontal: 30,
             }}>
                 <View style={styles.infoBoxWrapper}>
                     <View style={[styles.infoBox, {
@@ -144,7 +155,16 @@ const Paiement = ({ navigation }) => {
                         <Caption>{convertDate(userInfo.details.createdAt)}</Caption>
                     </View>
                 </View>
-                {Array.isArray(payments) && payments.length > 0 ? (
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={COLORS.primary} />
+                    </View>
+                ) : error ? (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                ) : (<View>
+                      {Array.isArray(payments) && payments.length > 0 ? (
                     payments.map((payment) => (
                         <TouchableOpacity
                             key={payment._id}
@@ -188,6 +208,7 @@ const Paiement = ({ navigation }) => {
                                         <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de Paiement</Text>
                                         <Text style={{ ...FONTS.h4, color: COLORS.white }}>{convertDate(payment.updatedAt)} </Text>
                                     </View>
+                                    <View style={{ height: 1, backgroundColor: COLORS.white }}></View>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
                                         <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Total </Text>
                                         <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix} </Text>
@@ -256,10 +277,13 @@ const Paiement = ({ navigation }) => {
                     <Text style={{ ...FONTS.body3, color: COLORS.black }}>No payment data available.</Text>
                 )}
 
+                </View>)}
+              
 
 
-            </View>
-        </ScrollView>
+
+            </ScrollView>
+        </View>
     );
 };
 
@@ -273,6 +297,11 @@ const styles = StyleSheet.create({
     userInfoSection: {
         paddingHorizontal: 30,
         marginBottom: 25,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,

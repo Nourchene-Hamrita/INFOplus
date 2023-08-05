@@ -51,12 +51,15 @@ export const register = async (req, res, next) => {
                         return res.status(404).json({ message: `Formation with ID ${formationId} not found` });
                     }
 
-                    // Push the formation ID into the formations array of the intern user
-                    newIntern.formations.push(formationId);
+                    // Push the formation and initialize the attendance array
+                    newIntern.formations.push({
+                        formation: formationId,
+                        attendance: [],
+                    });
                 }
             }
 
-            // Save the new intern and the new formation
+            // Save the new intern
             await newIntern.save();
         } else if (req.body.role === 'parent') {
             // Create parent user
@@ -123,28 +126,35 @@ export const register = async (req, res, next) => {
 };
 
 
+
 export const login = async (req, res, next) => {
     try {
         const user = await User.findOne({ login: req.body.login });
-        if (!user) return next(createError(404, "Utilisateur non trouvé !"));
+        if (!user) return next(createError(404, "User not found!"));
 
         const isPasswordCorrect = await bcrypt.compare(
             req.body.password,
             user.password
         );
         if (!isPasswordCorrect)
-            return next(createError(400, "Mot de passe ou nom d'utilisateur erronés!"));
+            return next(createError(400, "Incorrect password or username!"));
 
         let details = { ...user._doc };
         if (user.role === "intern") {
-            const intern = await Intern.findOne({ user: user._id }).populate(
-                "formations" // Populate the formations field in the intern document
-            );
-            details = {
-                ...details,
-                level: intern.level,
-                promotion: intern.promotion,
-                formations: intern.formations, // Include the formations information in the response
+            const intern = await Intern.findOne({ user: user._id })
+                .populate({
+                    path: "formations.formation", // Populate the nested formation field in the intern document
+                    model: "Formation",
+                })
+                .exec();
+
+            if (intern) {
+                details = {
+                    ...details,
+                    level: intern.level,
+                    promotion: intern.promotion,
+                    formations: intern.formations.map((item) => item.formation), // Extract the populated formation data
+                };
             }
         } else if (user.role === 'parent') {
             // Fetch additional data for parent role
@@ -173,4 +183,3 @@ export const login = async (req, res, next) => {
         next(err);
     }
 };
-

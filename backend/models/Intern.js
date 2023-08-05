@@ -7,20 +7,24 @@ const InternSchema = new mongoose.Schema(
             ref: "User",
             required: true, // Ensure the user is required when creating an intern
         },
-        level: { type: String } ,
+        level: { type: String },
         promotion: { type: String },
         formations: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Formation",
+                formation: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Formation",
+                    required: true,
+                },
+                attendance: [
+                    {
+                        date: { type: Date, required: true },
+                        isPresent: { type: Boolean, default: false },
+                        subject: { type: String },
+                    },
+                ],
             },
         ],
-        attendance: [
-            {
-              date: { type: Date, required: true }, // Date of the attendance session
-              isPresent: { type: Boolean, default: false }, // Whether the intern is present or not
-            },
-          ],
     },
     { timestamps: true }
 );

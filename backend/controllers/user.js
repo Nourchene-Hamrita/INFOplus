@@ -132,11 +132,11 @@ export const getTimeTable = async (req, res, next) => {
         if (intern) {
             level = intern.level;
         } else if (teacher) {
-            level = teacher.levels; // Use 'teacher.levels' instead of 'teacher.profil'
+            level = teacher.levels; 
         }
 
         // Fetch timetables for the user's level
-        const timetables = await Timetable.find({ level });
+        const timetables = await Timetable.find({ level,user:userId });
 
         // Map the timetables to include the PDF URL for each timetable
         const timetablesWithUrls = timetables.map(timetable => {

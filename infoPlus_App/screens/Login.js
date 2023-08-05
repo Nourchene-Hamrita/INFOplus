@@ -103,9 +103,7 @@ const Login = ({ navigation }) => {
 
                 </View>
                 <Animatable.View animation="fadeInUpBig"
-                    style={[styles.footer, {
-
-                    }]}>
+                    style={[styles.footer, {}]}>
                     <Text style={styles.text_footer}>Login</Text>
                     <View style={styles.action}>
                         <FontAwesome name='user-o' color='#05375a' size={20} />
