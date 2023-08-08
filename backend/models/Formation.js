@@ -53,6 +53,38 @@ const FormationSchema = new mongoose.Schema(
         prix: {
             type: Number,
         },
+        classes: [
+            {
+                name: { type: String, required: true },
+                level: { type: String, required: true }, // Corresponding level
+                subjects: [{ type: String }], // List of subjects in the class
+                assignments: [
+                    {
+                        title: { type: String, required: true },
+                        description: { type: String },
+                        dueDate: { type: Date },
+                        subject: { type: String },
+                        attachment: { type: Buffer },
+                        attachmentMimeType: { type: String },
+                    },
+                ],
+                announcements: [
+                    {
+                        title: { type: String, required: true },
+                        content: { type: String },
+                    },
+                ],
+                interns: [
+                    {
+                        intern: {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'Intern.user',
+                        },
+
+                    },
+                ],
+            },
+        ],
     },
     { timestamps: true }
 );

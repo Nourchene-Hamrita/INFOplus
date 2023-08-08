@@ -17,7 +17,16 @@ const TeacherSchema = new mongoose.Schema(
             enum: ["anglais", "francais", "info"],
         },
         levels: [{ type: String }],
-
+        assignedClasses: [
+            {
+                classId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Formation.classes", // Reference to Formation's classes
+                    required: true,
+                },
+                subjects: [{ type: String }], // Subjects taught by the teacher in this class
+            },
+        ],
     },
     { timestamps: true }
 );

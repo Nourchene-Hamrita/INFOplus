@@ -146,7 +146,7 @@ export const createFormationReview = asyncHandler(async (req, res) => {
 // Create a Class for a Formation
 export const createClass = asyncHandler(async (req, res) => {
     const { formationId } = req.params;
-    const { name, level, subjects } = req.body;
+    const { name, level, subjects, interns } = req.body; // Add interns field
 
     try {
         const formation = await Formation.findById(formationId);
@@ -169,6 +169,7 @@ export const createClass = asyncHandler(async (req, res) => {
             subjects,
             assignments: [],
             announcements: [],
+            interns: interns || [], // Add interns array to the new class
         };
 
         formation.classes.push(newClass);
@@ -180,6 +181,39 @@ export const createClass = asyncHandler(async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+//update a class 
+export const updateClass = asyncHandler(async (req, res) => {
+    const { formationId, className } = req.params;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: 'Formation not found' });
+            return;
+        }
+
+        // Find the class by name
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: 'Class not found in formation' });
+            return;
+        }
+
+        // Update the class fields based on the provided updateFields
+        Object.assign(classInfo, req.body);
+
+        await formation.save();
+
+        res.status(200).json(formation);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+
 
 
 
