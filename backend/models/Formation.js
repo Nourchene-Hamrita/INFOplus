@@ -66,6 +66,8 @@ const FormationSchema = new mongoose.Schema(
                         subject: { type: String },
                         attachment: { type: Buffer },
                         attachmentMimeType: { type: String },
+                        attachmentOriginalName: { type: String }, // Original name of the attached file
+                        attachmentUrl: { type: String }, // URL to access the attached file
                     },
                 ],
                 announcements: [

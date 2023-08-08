@@ -1,6 +1,7 @@
 import { Formation, FormationAcceleree, FormationDiplomante } from "../models/Formation.js";
 import asyncHandler from 'express-async-handler';
 import { Intern } from "../models/Intern.js";
+const BASE_URL = "http://192.168.137.1:8800/api"
 
 // Obtenir tous les formation
 export const getAllFormations = async (req, res) => {
@@ -248,11 +249,22 @@ export const createAssignment = asyncHandler(async (req, res) => {
 
         // Check if a file was uploaded
         if (req.file) {
+            assignment.attachmentOriginalName = req.file.originalname; // Store original file name
             assignment.attachment = req.file.buffer; // Store file buffer
             assignment.attachmentMimeType = req.file.mimetype;
         }
 
-        classInfo.assignments.push(assignment);
+        classInfo.assignments.push(assignment); // Add assignment to the array
+
+        await formation.save();
+
+        // Get the assignment that was just added to the array
+        const addedAssignment = classInfo.assignments[classInfo.assignments.length - 1];
+
+        // Generate attachment URL based on your URL generation logic using the assignment's _id
+        if (addedAssignment.attachmentOriginalName && addedAssignment.attachment) {
+            addedAssignment.attachmentUrl = `${BASE_URL}/assignments/${formationId}/${className}/${addedAssignment._id}/attachment`;
+        }
 
         await formation.save();
 
@@ -261,7 +273,6 @@ export const createAssignment = asyncHandler(async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-
 
 
 // Create Announcement for a Class
@@ -384,7 +395,16 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
                 console.log('classInfo.level:', classInfo.level);
 
                 if (classInfo.level.trim().toLowerCase() === studentLevel.trim().toLowerCase()) {
-                    assignments.push(...classInfo.assignments);
+                    const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl }) => ({
+                        _id,
+                        title,
+                        description,
+                        dueDate,
+                        subject,
+                        attachmentOriginalName,
+                        attachmentUrl
+                    }));
+                    assignments.push(...filteredAssignments);
                     announcements.push(...classInfo.announcements);
                 }
             });
@@ -398,3 +418,4 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
