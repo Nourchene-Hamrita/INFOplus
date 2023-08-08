@@ -1,5 +1,6 @@
 import { Formation, FormationAcceleree, FormationDiplomante } from "../models/Formation.js";
 import asyncHandler from 'express-async-handler';
+import { Intern } from "../models/Intern.js";
 
 // Obtenir tous les formation
 export const getAllFormations = async (req, res) => {
@@ -32,6 +33,7 @@ export const createFormation = async (req, res) => {
         const { type, ...rest } = req.body;
 
         let formation;
+
         if (type === "diplomante") {
             formation = new FormationDiplomante({ ...rest });
         } else if (type === "acceleree") {
@@ -40,12 +42,17 @@ export const createFormation = async (req, res) => {
             return res.status(400).json({ message: "Invalid formation type" });
         }
 
+        // Since the new Formation model has a classes array,
+        // you can initialize it as an empty array here
+        formation.classes = [];
+
         const newFormation = await formation.save();
         res.status(201).json(newFormation);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
+
 
 
 export const UpdateFormation = async (req, res) => {
@@ -132,5 +139,228 @@ export const createFormationReview = asyncHandler(async (req, res) => {
     } else {
         res.status(404)
         throw new Error('Formation not found')
+    }
+});
+
+
+// Create a Class for a Formation
+export const createClass = asyncHandler(async (req, res) => {
+    const { formationId } = req.params;
+    const { name, level, subjects } = req.body;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: 'Formation not found' });
+            return;
+        }
+
+        // Check if the class with the same name already exists
+        const existingClass = formation.classes.find((cls) => cls.name === name);
+        if (existingClass) {
+            res.status(400).json({ message: 'Class with the same name already exists' });
+            return;
+        }
+
+        const newClass = {
+            name,
+            level,
+            subjects,
+            assignments: [],
+            announcements: [],
+        };
+
+        formation.classes.push(newClass);
+
+        await formation.save();
+
+        res.status(201).json(formation);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+
+
+// Create Assignment for a Class
+export const createAssignment = asyncHandler(async (req, res) => {
+    const { formationId, className } = req.params;
+    const { title, description, dueDate, subject } = req.body;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        // Find the class by name
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        const assignment = {
+            title,
+            description,
+            dueDate,
+            subject,
+        };
+
+        // Check if a file was uploaded
+        if (req.file) {
+            assignment.attachment = req.file.buffer; // Store file buffer
+            assignment.attachmentMimeType = req.file.mimetype;
+        }
+
+        classInfo.assignments.push(assignment);
+
+        await formation.save();
+
+        res.status(201).json(formation);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+
+// Create Announcement for a Class
+export const createAnnouncement = asyncHandler(async (req, res) => {
+
+    const { formationId, className } = req.params;
+    const { title, content } = req.body;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        // Find the class by name
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        classInfo.announcements.push({
+            title,
+            content,
+        });
+
+        await formation.save();
+
+        res.status(201).json(formation);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+// Get Assignments for a Class
+export const getClassAssignments = asyncHandler(async (req, res) => {
+    const { formationId, className } = req.params; // Update to use className
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        // Find the class by name
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        const assignments = classInfo.assignments;
+
+        res.status(200).json(assignments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Get Announcements for a Class
+export const getClassAnnouncements = asyncHandler(async (req, res) => {
+    const { formationId, className } = req.params; // Update to use className
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        // Find the class by name
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        const announcements = classInfo.announcements;
+
+        res.status(200).json(announcements);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Get Assignments and Announcements for a Student's Level
+export const getStudentLevelContent = asyncHandler(async (req, res) => {
+    const { internId } = req.params;
+
+    try {
+        const intern = await Intern.findOne({ user: internId });
+
+        if (!intern) {
+            res.status(404).json({ message: "Intern not found" });
+            return;
+        }
+
+        const studentLevel = intern.level;
+        const assignments = [];
+        const announcements = [];
+
+        // Find assignments and announcements for the student's level
+        const formations = await Formation.find({
+            "classes.level": studentLevel,
+        });
+
+        console.log('studentLevel:', studentLevel);
+
+        formations.forEach((formation) => {
+            console.log('Formation:', formation);
+
+            formation.classes.forEach((classInfo) => {
+                console.log('classInfo.level:', classInfo.level);
+
+                if (classInfo.level.trim().toLowerCase() === studentLevel.trim().toLowerCase()) {
+                    assignments.push(...classInfo.assignments);
+                    announcements.push(...classInfo.announcements);
+                }
+            });
+        });
+
+        console.log('Assignments:', assignments);
+        console.log('Announcements:', announcements);
+
+        res.status(200).json({ assignments, announcements });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
