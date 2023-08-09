@@ -9,13 +9,14 @@ import DetailEvent from '../screens/Events/DetailEvent';
 import Profile from '../screens/Profile';
 import TimeTable from '../screens/TimeTable';
 import Result from '../screens/Result';
-import Assignment from '../screens/Assignment';
+import Assignment from '../screens/Assignments/Assignment';
 import Paiement from '../screens/Paiement';
 import Rate from '../screens/Rate';
 import Attendance from '../screens/Attendance';
 import Reclamation from '../screens/Reclamations/Reclamation';
 import ReclamationList from '../screens/Reclamations/ReclamationsList';
 import ViewAll from '../screens/Events/ViewAll';
+import AssignmentDetail from '../screens/Assignments/AssignmentDetail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -115,6 +116,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="Assignment"
                 component={Assignment}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="AssignmentDetail"
+                component={AssignmentDetail}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

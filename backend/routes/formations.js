@@ -18,6 +18,7 @@ import {
   getStudentLevelContent,
   createClass,
   updateClass,
+  getAssignmentById,
 } from "../controllers/formation.js"
 import { protect, verifyToken } from "../utils/verifyToken.js";
 
@@ -42,6 +43,7 @@ router.put(
 );
 router.post("/:formationId/classes/:className/announcements", protect, createAnnouncement);
 router.get("/:formationId/classes/:className/assignments", getClassAssignments);
+router.get("/:formationId/classes/:className/:assignmentId", getAssignmentById);
 router.get("/:formationId/classes/:className/announcements", getClassAnnouncements);
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
 

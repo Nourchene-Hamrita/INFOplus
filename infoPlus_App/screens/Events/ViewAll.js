@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View, Image } from 'react-native'
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import * as Animatable from 'react-native-animatable'
 import Icon from 'react-native-vector-icons/Feather';
@@ -109,12 +110,50 @@ export default function ViewAll({ route, navigation }) {
 
     return (
         <View style={[styles.container]}>
-
+            <View
+                style={{
+                    width: '100%',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: 16,
+                    paddingLeft: 16,
+                }}
+            >
+                <TouchableOpacity onPress={() => navigation.goBack('Home')}>
+                    <Entypo
+                        name="chevron-left"
+                        style={{
+                            fontSize: 18,
+                            color: COLORS.white,
+                            padding: 12,
+                            backgroundColor: COLORS.primary,
+                            borderRadius: 10,
+                        }}
+                    />
+                </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{
+                        color: COLORS.white,
+                        fontSize: 20,
+                        fontWeight: '600',
+                        paddingRight: 30
+                    }}>Tous les Evènements</Text>
+                </View>
+            </View>
+            <Animatable.View style={{
+                flex: 1,
+                backgroundColor: '#fff',
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                paddingVertical: 60,
+                paddingHorizontal: 3,
+            }} animation="fadeInUpBig">
             <Animatable.View
                 ref={viewRef}
                 easing={'ease-in-out'}
                 duration={500}
-                style={styles.container}>
+            >
                 <FlatList
                     data={data}
                     keyExtractor={(_, i) => String(i)}
@@ -125,13 +164,16 @@ export default function ViewAll({ route, navigation }) {
                     ListEmptyComponent={ListEmptyComponent}
                 />
             </Animatable.View>
+            </Animatable.View>
         </View>
+
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: COLORS.primary
     },
     name: {
         fontWeight: 'bold',
@@ -153,6 +195,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         margin: 8,
         borderRadius: 10,
+        shadowColor: COLORS.primary,
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 3.84,
+
+        elevation: 5
+
     },
     image: {
         height: 150,

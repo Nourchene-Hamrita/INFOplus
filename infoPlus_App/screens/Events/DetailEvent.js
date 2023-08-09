@@ -80,7 +80,7 @@ const DetailEvent = ({ navigation }) => {
                 <View
                     style={{
                         width: '100%',
-                        backgroundColor: COLORS.lightGray,
+                        backgroundColor: COLORS.primary,
                         borderBottomRightRadius: 20,
                         borderBottomLeftRadius: 20,
                         position: 'relative',
@@ -104,16 +104,16 @@ const DetailEvent = ({ navigation }) => {
                                 name="chevron-left"
                                 style={{
                                     fontSize: 18,
-                                    color: COLORS.primary,
+                                    color: COLORS.white,
                                     padding: 12,
-                                    backgroundColor:'transparent',
+                                    backgroundColor: 'transparent',
                                     borderRadius: 10,
                                 }}
                             />
 
                         </TouchableOpacity>
                         <Text style={{
-                            color: COLORS.primary, fontSize: 18,
+                            color: COLORS.white, fontSize: 18,
                             fontWeight: '600',
                         }}>Détail Evènement</Text>
                     </View>
@@ -166,6 +166,7 @@ const DetailEvent = ({ navigation }) => {
                     style={{
                         paddingHorizontal: 16,
                         marginTop: 6,
+
                     }}>
                     <View
                         style={{

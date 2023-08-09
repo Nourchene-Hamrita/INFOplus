@@ -329,13 +329,62 @@ export const getClassAssignments = asyncHandler(async (req, res) => {
             return;
         }
 
-        const assignments = classInfo.assignments;
+        const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl }) => ({
+            _id,
+            title,
+            description,
+            dueDate,
+            subject,
+            attachmentOriginalName,
+            attachmentUrl
+        }));
 
-        res.status(200).json(assignments);
+        res.status(200).json(filteredAssignments);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+export const getAssignmentById = asyncHandler(async (req, res) => {
+    const { formationId, className, assignmentId } = req.params;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        const assignment = classInfo.assignments.find(assignment => assignment._id.toString() === assignmentId);
+
+        if (!assignment) {
+            res.status(404).json({ message: "Assignment not found in class" });
+            return;
+        }
+
+        const { _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl } = assignment;
+
+        res.status(200).json({
+            _id,
+            title,
+            description,
+            dueDate,
+            subject,
+            attachmentOriginalName,
+            attachmentUrl
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 // Get Announcements for a Class
 export const getClassAnnouncements = asyncHandler(async (req, res) => {
@@ -366,6 +415,7 @@ export const getClassAnnouncements = asyncHandler(async (req, res) => {
 });
 
 // Get Assignments and Announcements for a Student's Level
+// Get Assignments and Announcements for a Student's Level
 export const getStudentLevelContent = asyncHandler(async (req, res) => {
     const { internId } = req.params;
 
@@ -380,6 +430,7 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         const studentLevel = intern.level;
         const assignments = [];
         const announcements = [];
+        const formationsDetails = [];
 
         // Find assignments and announcements for the student's level
         const formations = await Formation.find({
@@ -391,22 +442,37 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         formations.forEach((formation) => {
             console.log('Formation:', formation);
 
-            formation.classes.forEach((classInfo) => {
+            const filteredClasses = formation.classes.filter(classInfo =>
+                classInfo.level.trim().toLowerCase() === studentLevel.trim().toLowerCase()
+            );
+
+            filteredClasses.forEach((classInfo) => {
                 console.log('classInfo.level:', classInfo.level);
 
-                if (classInfo.level.trim().toLowerCase() === studentLevel.trim().toLowerCase()) {
-                    const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl }) => ({
-                        _id,
-                        title,
-                        description,
-                        dueDate,
-                        subject,
-                        attachmentOriginalName,
-                        attachmentUrl
-                    }));
-                    assignments.push(...filteredAssignments);
-                    announcements.push(...classInfo.announcements);
-                }
+                const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl }) => ({
+                    _id,
+                    title,
+                    description,
+                    dueDate,
+                    subject,
+                    attachmentOriginalName,
+                    attachmentUrl,
+                    formation: { id: formation._id, name: formation.nom }, // Add formation information
+                    class: { id: classInfo._id, name: classInfo.name }, // Add class information
+                }));
+                assignments.push(...filteredAssignments);
+                announcements.push(...classInfo.announcements);
+
+                formationsDetails.push({
+                    formation: {
+                        id: formation._id, // Add the formation ID
+                        name: formation.nom,
+                    },
+                    class: {
+                        id: classInfo._id, // Add the class ID
+                        name: classInfo.name,
+                    },
+                });
             });
         });
 
@@ -418,4 +484,5 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 

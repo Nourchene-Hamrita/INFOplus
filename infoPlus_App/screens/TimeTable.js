@@ -6,6 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../constants';
 import * as Animatable from 'react-native-animatable';
 import { Animations } from '../constants/Animations';
+import Entypo from 'react-native-vector-icons/Entypo';
 const colorAr = [
     '#637aff',
     '#60c5a8',
@@ -76,8 +77,8 @@ const TimeTable = ({ navigation }) => {
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size='large' color={COLORS.primary} />
-                <Text>Loading...</Text>
+                <ActivityIndicator size='large' color={COLORS.white} />
+                
             </View>
         );
     }
@@ -109,21 +110,61 @@ const TimeTable = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Animatable.View
-                ref={viewRef}
-                easing={'ease-in-out'}
-                duration={500}
-                style={styles.container}>
-                <FlatList
-                    data={timetables}
-                    keyExtractor={(item) => item._id}
-                    renderItem={renderItem}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 100 }}
-                    ListEmptyComponent={ListEmptyComponent}
-                />
-            </Animatable.View>
+            <View
+                style={{
+                    width: '100%',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: 16,
+                    paddingLeft: 16,
+                }}
+            >
+                <TouchableOpacity onPress={() => navigation.goBack('Home')}>
+                    <Entypo
+                        name="chevron-left"
+                        style={{
+                            fontSize: 18,
+                            color: COLORS.white,
+                            padding: 12,
+                            backgroundColor: COLORS.primary,
+                            borderRadius: 10,
+                        }}
+                    />
+                </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{
+                        color: COLORS.white,
+                        fontSize: 20,
+                        fontWeight: '600',
+                        paddingRight: 30
+                    }}>Emploi du temps</Text>
+                </View>
+            </View>
+            <View style={{
+                flex: 1,
+                backgroundColor: '#fff',
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+                paddingVertical: 60,
+                paddingHorizontal: 20,
+            }}>
+                <Animatable.View
+                    ref={viewRef}
+                    easing={'ease-in-out'}
+                    duration={500}
+                >
+                    <FlatList
+                        data={timetables}
+                        keyExtractor={(item) => item._id}
+                        renderItem={renderItem}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: 100 }}
+                        ListEmptyComponent={ListEmptyComponent}
+                    />
+                </Animatable.View>
 
+            </View>
         </View>
     );
 };
@@ -131,9 +172,8 @@ const TimeTable = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 25,
         justifyContent: 'center',
-        alignItems: 'center'
+        backgroundColor: COLORS.primary
     },
     timetableItem: {
         marginVertical: 10,
@@ -163,6 +203,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         margin: 8,
         borderRadius: 10,
+        shadowColor: COLORS.primary,
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 3.84,
+
+        elevation: 5
     },
     image: {
         height: 150,

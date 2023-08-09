@@ -9,17 +9,17 @@ import {
 
 } from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS, FONTS } from '../constants';
-import { AuthContext } from '../context/AuthContext';
-import { convertDate } from '../utils/date';
-import user from "../assets/images/user.jpg"
-import { ScrollView } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Feather';
+import { COLORS, FONTS } from '../../constants';
+import { AuthContext } from '../../context/AuthContext';
+
+
 import * as Animatable from 'react-native-animatable';
-import { Animations } from '../constants/Animations';
+import { Animations } from '../../constants/Animations';
 import axios from 'axios';
-import { BASE_URL } from '../utils/config';
+import { BASE_URL } from '../../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { convertDate, formatDate } from '../../utils/date';
 
 const colorAr = [
     '#637aff',
@@ -33,9 +33,9 @@ const colorAr = [
     '#ff4c98',
 ]
 const bgColor = (i) => colorAr[i % colorAr.length];
-const openPdf = (pdfUrl) => {
+const openFile = (attachmentUrl) => {
     // Open the PDF in a full-screen viewer using Linking
-    Linking.openURL(pdfUrl);
+    Linking.openURL(attachmentUrl);
 };
 const ListItem = ({ item, index, animation, navigation }) => {
     return (
@@ -47,14 +47,24 @@ const ListItem = ({ item, index, animation, navigation }) => {
             <View style={styles.listItem}>
                 <TouchableOpacity
                     activeOpacity={0.7}
-                    onPress={() => openPdf(item.pdfUrl)}>
+                    onPress={() => openFile(item.attachmentUrl)}>
 
-                    <View style={[styles.image, { backgroundColor: bgColor(index) }]} />
+                    <View style={[styles.image, { backgroundColor: bgColor(index) }]}>
+                        <Text style={styles.subjectText}>{item.subject}</Text>
+                    </View>
 
                 </TouchableOpacity>
                 <View style={styles.detailsContainer}>
-                    <Text style={styles.pdfText}>{item.title}</Text>
+                    <Text style={styles.fileText} numberOfLines={1}>{item.title}</Text>
+                    <Icon name="more-vertical" size={20} color={COLORS.black} onPress={() => navigation.navigate('AssignmentDetail', {
+                        formationId: item.formation.id,
+                        className: item.class.name,
+                        assignmentId: item._id
+                    })} />
+
                 </View>
+
+
             </View>
         </Animatable.View>
     )
@@ -105,7 +115,6 @@ const Assignment = ({ navigation }) => {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size='large' color={COLORS.white} />
-                <Text>Loading...</Text>
             </View>
         );
     }
@@ -133,8 +142,7 @@ const Assignment = ({ navigation }) => {
 
 
     return (
-        <View style={styles.container}>
-
+        <View style={[styles.container]}>
             <View
                 style={{
                     width: '100%',
@@ -166,17 +174,15 @@ const Assignment = ({ navigation }) => {
                     }}>Mes Devoirs</Text>
                 </View>
             </View>
-
-            <View style={{
+            <Animatable.View style={{
                 flex: 1,
                 backgroundColor: '#fff',
                 borderTopLeftRadius: 30,
                 borderTopRightRadius: 30,
-                paddingVertical: 100,
-                paddingHorizontal: 20,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
+                paddingVertical: 60,
+                paddingHorizontal: 3,
+            }} animation="fadeInUpBig">
+
                 <Animatable.View
                     ref={viewRef}
                     easing={'ease-in-out'}
@@ -184,85 +190,25 @@ const Assignment = ({ navigation }) => {
                 >
                     <FlatList
                         data={assignments}
-                        keyExtractor={(item) => item._id}
+                        keyExtractor={(_, i) => String(i)}
+                        numColumns={2}
                         renderItem={renderItem}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingBottom: 100 }}
                         ListEmptyComponent={ListEmptyComponent}
                     />
                 </Animatable.View>
-
-
-
-            </View>
+            </Animatable.View>
         </View>
-    );
-};
 
+    )
+}
 export default Assignment;
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.primary,
         justifyContent: 'center',
-
-    },
-    userInfoSection: {
-        paddingHorizontal: 30,
-        marginBottom: 25,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: COLORS.white
-    },
-    caption: {
-        fontSize: 14,
-        lineHeight: 14,
-        fontWeight: '500',
-        color: '#fff',
-    },
-    row: {
-        flexDirection: 'row',
-        marginBottom: 10,
-    },
-    infoBoxWrapper: {
-        borderBottomColor: '#dddddd',
-        borderBottomWidth: 1,
-        borderTopColor: '#dddddd',
-        borderTopWidth: 1,
-        flexDirection: 'row',
-        height: 120,
-    },
-    infoBox: {
-        width: '50%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    menuWrapper: {
-        marginTop: 10,
-    },
-    menuItem: {
-        flexDirection: 'row',
-        paddingVertical: 15,
-        paddingHorizontal: 30,
-    },
-    menuItemText: {
-        color: '#777777',
-        marginLeft: 20,
-        fontWeight: '600',
-        fontSize: 16,
-        lineHeight: 26,
-    },
-
-    timetableItem: {
-        marginVertical: 10,
-        alignItems: 'center',
-    },
-    pdfText: {
-        color: COLORS.primary,
-        fontSize: 16,
     },
     name: {
         fontWeight: 'bold',
@@ -299,6 +245,17 @@ const styles = StyleSheet.create({
         margin: 5,
         borderRadius: 10,
         backgroundColor: COLORS.primary,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    fileText: {
+        color: COLORS.primary,
+        fontSize: 16,
+    },
+    subjectText: {
+        color: COLORS.white,
+        fontSize: 18,
+
     },
     detailsContainer: {
         paddingHorizontal: 16,
@@ -307,7 +264,4 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-
-
-});
-
+})
