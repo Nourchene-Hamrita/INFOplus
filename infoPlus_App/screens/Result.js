@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-animatable';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { COLORS, FONTS, SIZES } from '../constants';
@@ -13,67 +13,88 @@ import { ActivityIndicator } from 'react-native-paper';
 import { convertDate, formatDate } from '../utils/date';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
+import { Picker } from '@react-native-picker/picker';
 
 const Result = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
     const [value, setValue] = useState(0);
-    const [attendanceSummary, setAttendanceSummary] = useState({
-        success: false,
-        totalDays: 0,
-        daysPresent: 0,
-        daysAbsent: 0,
-        attendancePercentage: 0,
-    });
-    const [attendanceRecords, setAttendanceRecords] = useState([]);
+    const [resultSummary, setResultSummary] = useState({});
+    const [formations, setFormations] = useState([]);
+    const [selectedFormation, setSelectedFormation] = useState(null); // State variable to store selected formation
+    const pickerRef = useRef();
     const [resultRecords, setResultRecords] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Function to fetch intern's formations
+    const fetchInternFormations = async () => {
+        try {
+            if (userInfo && userInfo.details && userInfo.details.formations) {
+                if (Array.isArray(userInfo.details.formations)) {
+                    setFormations(userInfo.details.formations);
+                    setSelectedFormation(userInfo.details.formations[0]?._id);
+                } else {
+                    console.log('Formations data is not an array:', userInfo.details.formations);
+                }
+            } else {
+                console.log('Formations data is missing in userInfo:', userInfo);
+            }
+        } catch (error) {
+            console.log('Error fetching intern formations:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchAttendanceSummary = async () => {
-            try {
-                // Make the API call to fetch the overall attendance summary
-                const response = await fetch(`${BASE_URL}/interns/${userInfo.details._id}/attendance/summary`);
-                if (!response.ok) {
-                    setError('Failed to fetch attendance summary');
-                    setLoading(false);
-                    return;
-                }
-                const data = await response.json();
-                setAttendanceSummary(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching overall attendance summary:', error);
-                setError('Failed to fetch attendance summary');
-                setLoading(false);
-            }
-        };
-
-
-        const fetchResultRecords = async () => {
-            try {
-                const response = await fetch(`${BASE_URL}/results/getResultIntern/${userInfo.details._id}/64d13d10f852c607738aec66`);
-                if (!response.ok) {
-                    setError('Failed to fetch Result records');
-                    setLoading(false);
-                    return;
-                }
-                const data = await response.json();
-                setResultRecords(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching result records:', error);
-                setError('Failed to fetch result records');
-                setLoading(false);
-            }
-        };
-
-        fetchAttendanceSummary();
-        fetchResultRecords();
+        fetchInternFormations();
     }, []);
+
+    const fetchResultSummary = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/results/getResultReport/${userInfo.details._id}/${selectedFormation}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch result summary');
+            }
+            const data = await response.json();
+            const successRate = parseFloat(data.successRate);
+            setResultSummary({ ...data, successRate });
+        } catch (error) {
+            console.error('Error fetching result summary:', error);
+            // setError('Failed to fetch result summary');
+        }
+    };
+
+    const fetchResultRecords = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/results/getResultIntern/${userInfo.details._id}/${selectedFormation}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch Result records');
+            }
+            const data = await response.json();
+            setResultRecords(data);
+        } catch (error) {
+            console.error('Error fetching result records:', error);
+            // setError('Failed to fetch result records');
+        }
+    };
+
+    useEffect(() => {
+        if (selectedFormation) {
+            setLoading(true); // Reset loading state
+            setError(''); // Reset error state
+
+            Promise.all([
+                fetchResultSummary(),
+                fetchResultRecords()
+            ]).finally(() => setLoading(false));
+        }
+    }, [selectedFormation]);
+
+    const screenWidth = Dimensions.get('window').width;
+    const buttonWidth = screenWidth * 0.8;
+    const comboBoxWidth = buttonWidth * 0.8;
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
             <View
                 style={{
@@ -107,10 +128,35 @@ const Result = ({ navigation }) => {
                 </View>
             </View>
             <View style={[styles.userInfoSection]}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginTop: 20 }}>
+                        Choisissez une formation
+                    </Text>
+
+                    {/* ComboBox to display formations */}
+                    <View style={[styles.comboBoxContainer, { width: comboBoxWidth }]}>
+                        <Picker
+                            ref={pickerRef}
+                            selectedValue={selectedFormation}
+                            onValueChange={(itemValue, itemIndex) => {
+                                console.log('Selected formation:', itemValue);
+                                if (itemValue !== selectedFormation) {
+                                    setSelectedFormation(itemValue);
+                                }
+                            }}
+                            style={[styles.pickerStyle, { height: 50 }]}
+                        >
+                            {formations.map((formation) => (
+                                <Picker.Item key={formation._id} label={formation.nom} value={formation._id} />
+                            ))}
+                        </Picker>
+                    </View>
+
+                </View>
                 <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-between' }}>
                     <CircularProgress
                         radius={60}
-                        value={attendanceSummary.attendancePercentage}
+                        value={resultSummary.successRate ? resultSummary.successRate : 0}
                         textColor='#222'
                         fontSize={20}
                         valueSuffix={'%'}
@@ -124,7 +170,7 @@ const Result = ({ navigation }) => {
 
                     <CircularProgress
                         radius={60}
-                        value={100 - (attendanceSummary.attendancePercentage)}
+                        value={resultSummary.successRate ? 100 - resultSummary.successRate : 0}
                         textColor='#222'
                         fontSize={20}
                         valueSuffix={'%'}
@@ -146,8 +192,8 @@ const Result = ({ navigation }) => {
                     </View>
                 ) : (
                     <View>
-                        {/* Use the attendanceSummary state to display the data */}
-                        {attendanceSummary.success ? (
+                        {/* Use the resultSummary state to display the data */}
+                        {resultRecords && resultRecords.length > 0 ? (
                             <View>
                                 <View style={styles.row}>
                                     <Feather
@@ -155,7 +201,7 @@ const Result = ({ navigation }) => {
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Nombre total de jours : {attendanceSummary.totalDays}</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Nombre total de jours : {resultRecords.createdAt}</Text>
                                 </View>
                                 <View style={styles.row}>
                                     <Feather
@@ -163,7 +209,7 @@ const Result = ({ navigation }) => {
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Jours de présence: {attendanceSummary.daysPresent}</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Jours de présence: {resultRecords.createdAt}</Text>
                                 </View>
                                 <View style={styles.row}>
                                     <Feather
@@ -171,7 +217,7 @@ const Result = ({ navigation }) => {
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Jours d'absence: {attendanceSummary.daysAbsent}</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Jours d'absence: {resultRecords.createdAt}</Text>
                                 </View>
                                 <View style={styles.row}>
                                     <Feather
@@ -179,18 +225,18 @@ const Result = ({ navigation }) => {
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Pourcentage d'assiduité: {attendanceSummary.attendancePercentage}%</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Pourcentage d'assiduité: {resultRecords.createdAt}%</Text>
                                 </View>
 
                             </View>
                         ) : (
-                            <Text>No attendance summary available !</Text>
+                            <Text style={{ color: COLORS.white }}>No result summary available !</Text>
                         )}
                     </View>
                 )}
             </View>
 
-            <ScrollView animation="fadeInUpBig" style={styles.footer}>
+            <View animation="fadeInUpBig" style={styles.footer}>
                 {loading ? (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color={COLORS.primary} />
@@ -200,8 +246,8 @@ const Result = ({ navigation }) => {
                         <Text style={styles.errorText}>{error}</Text>
                     </View>
                 ) : (
-                    /* Display attendance records */
-                    resultRecords.length > 0 ? (
+                    /* Display result records */
+                    resultRecords && resultRecords.length > 0 ? (
                         <>
                             {resultRecords.map((record, index) => (
                                 <View key={index} style={{
@@ -332,10 +378,10 @@ const Result = ({ navigation }) => {
                     )
                 )}
 
-            </ScrollView>
+            </View>
 
 
-        </View>
+        </ScrollView>
     );
 }
 
@@ -406,7 +452,22 @@ const styles = StyleSheet.create({
     textSign: {
         fontSize: 18,
         fontWeight: 'bold',
-    }
+    },
+    comboBoxContainer: {
+        height: 50, // Set a height that fits the ComboBox
+        borderColor: COLORS.white,
+        borderWidth: 1,
+        borderRadius: 5,
+        margin: 20,
+        padding: 10,
+    },
+    pickerStyle: {
+        width: '100%', // Set the same width as the ComboBox container
+        color: COLORS.white,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginTop: -12
+    },
 });
 export default Result;
 
