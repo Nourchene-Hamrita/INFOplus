@@ -10,7 +10,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { BASE_URL } from '../utils/config';
 import { AuthContext } from '../context/AuthContext';
 import { ActivityIndicator } from 'react-native-paper';
-import { formatDate } from '../utils/date';
+import { convertDate, formatDate } from '../utils/date';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -25,6 +25,7 @@ const Result = ({ navigation }) => {
         attendancePercentage: 0,
     });
     const [attendanceRecords, setAttendanceRecords] = useState([]);
+    const [resultRecords, setResultRecords] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -50,26 +51,26 @@ const Result = ({ navigation }) => {
         };
 
 
-        const fetchAttendanceRecords = async () => {
+        const fetchResultRecords = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/interns/${userInfo.details._id}/attendance`);
+                const response = await fetch(`${BASE_URL}/results/getResultIntern/${userInfo.details._id}/64d13d10f852c607738aec66`);
                 if (!response.ok) {
-                    setError('Failed to fetch attendance records');
+                    setError('Failed to fetch Result records');
                     setLoading(false);
                     return;
                 }
                 const data = await response.json();
-                setAttendanceRecords(data.attendance);
+                setResultRecords(data);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching attendance records:', error);
-                setError('Failed to fetch attendance records');
+                console.error('Error fetching result records:', error);
+                setError('Failed to fetch result records');
                 setLoading(false);
             }
         };
 
         fetchAttendanceSummary();
-        fetchAttendanceRecords();
+        fetchResultRecords();
     }, []);
     return (
         <View style={styles.container}>
@@ -200,15 +201,15 @@ const Result = ({ navigation }) => {
                     </View>
                 ) : (
                     /* Display attendance records */
-                    attendanceRecords.length > 0 ? (
+                    resultRecords.length > 0 ? (
                         <>
-                            {attendanceRecords.map((record, index) => (
+                            {resultRecords.map((record, index) => (
                                 <View key={index} style={{
                                     marginTop: 20
                                 }}>
                                     <View
                                         style={{
-                                            height: 100,
+                                            height: 200,
                                             borderTopLeftRadius: 20,
                                             borderTopRightRadius: 20,
                                             backgroundColor: COLORS.primary,
@@ -228,19 +229,42 @@ const Result = ({ navigation }) => {
 
                                             }}>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
-                                                <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de la séance </Text>
-                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{formatDate(record.date)} </Text>
+                                                <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de délibération </Text>
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{convertDate(record.createdAt)} </Text>
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
                                                 <Text style={{ ...FONTS.h5, color: COLORS.white }}>Matière </Text>
-                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{record.subject} </Text>
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{record.scores[0].subject}</Text>
+                                            </View>
+
+
+
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>Note CC</Text>
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{record.scores[0].note_cc} </Text>
+                                            </View>
+
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>Note TP</Text>
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{record.scores[0].note_tp} </Text>
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
-                                                <Text style={{ ...FONTS.h5, color: COLORS.white }}>Assiduité </Text>
-                                                {record.isPresent === true ?
+
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>Note Examen</Text>
+                                                <Text style={{ ...FONTS.h4, color: COLORS.white }}>{record.scores[0].note_examen} </Text>
+                                            </View>
+                                            <View style={{ height: 1, backgroundColor: COLORS.white, margin: 3 }}></View>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                                <Text style={{ ...FONTS.h5, color: COLORS.white }}>Moyenne Finale </Text>
+
+                                                <Text style={{ ...FONTS.h5, color: COLORS.white }}> Total </Text>
+
+                                                {/* {record.isPresent === true ?
                                                     <Text style={{ ...FONTS.h4, color: COLORS.white }}>Présent(e)</Text> :
                                                     <Text style={{ ...FONTS.h4, color: COLORS.white }}>Absent(e)</Text>
-                                                }
+                                                } */}
 
                                             </View>
 
@@ -276,7 +300,7 @@ const Result = ({ navigation }) => {
                                     >
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <Text style={{ ...FONTS.h4, color: COLORS.black }} numberOfLines={1}>Formation</Text>
-                                            {record.isPresent === true ?
+                                            {/* {record.isPresent === true ?
                                                 <Animatable.View
                                                     animation="bounceIn"
                                                 >
@@ -294,7 +318,7 @@ const Result = ({ navigation }) => {
                                                         color="red"
                                                         size={23}
                                                     />
-                                                </Animatable.View>}
+                                                </Animatable.View>} */}
                                         </View>
                                         <Text style={{ ...FONTS.body4, color: COLORS.black }} numberOfLines={2}>{record.formation.nom}</Text>
 
@@ -304,7 +328,7 @@ const Result = ({ navigation }) => {
                             ))}
                         </>
                     ) : (
-                        <Text>No attendance records found</Text>
+                        <Text>No result records found</Text>
                     )
                 )}
 
@@ -328,7 +352,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 30,
         paddingVertical: 5,
         paddingHorizontal: 20,
-        
+
     },
     loadingContainer: {
         flex: 1,

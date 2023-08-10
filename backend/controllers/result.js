@@ -232,4 +232,66 @@ export const searchResults = async (req, res) => {
         });
     }
 };
+export const getStudentReport = async (req, res) => {
+    try {
+        const { internId, formationId } = req.params;
+
+        // Find the intern by their unique identifier
+        const existingIntern = await Intern.findOne({ user: internId });
+
+        if (!existingIntern) {
+            return res.status(404).json({
+                message: "Intern not found for the provided internId",
+                internId: internId,
+            });
+        }
+
+        // Find results for the specific intern and formation
+        const results = await Result.find({
+            intern: existingIntern.user,
+            formation: formationId,
+        });
+
+        if (!results || results.length === 0) {
+            return res.status(404).json({
+                message: "No results found for this intern and formation",
+                internId: internId,
+                formationId: formationId,
+            });
+        }
+
+        // Calculate the success rate
+        let totalScore = 0;
+        let maxPossibleScore = 0;
+        results.forEach(result => {
+            result.scores.forEach(score => {
+                totalScore += score.note_cc + score.note_tp + score.note_examen;
+                maxPossibleScore += 20 + 20 + 20; // Assuming each component has a max score of 20
+            });
+        });
+
+        const successRate = (totalScore / maxPossibleScore) * 100;
+
+        // Create the report object
+        const report = {
+            intern: {
+                firstName: existingIntern.firstName,
+                lastName: existingIntern.lastName,
+                login: existingIntern.login,
+            },
+            formationId: formationId,
+            successRate: successRate.toFixed(2) + "%", // Format success rate to two decimal places
+            results: results,
+        };
+
+        res.status(200).json(report);
+    } catch (error) {
+        res.status(500).json({
+            message: "Error generating student report",
+            error: error.message,
+        });
+    }
+};
+
+
 

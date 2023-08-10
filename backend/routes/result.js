@@ -1,6 +1,6 @@
 import express from "express";
 
-import { addResult, getResultByFormation, getResultInternFormation, searchResults, updateResult } from "../controllers/result.js";
+import { addResult, getResultByFormation, getResultInternFormation, getStudentReport, searchResults, updateResult } from "../controllers/result.js";
 import { protect, verifyAdmin } from "../utils/verifyToken.js";
 
 
@@ -30,5 +30,6 @@ router.get(
     "/getResultIntern/:internId/:formationId", getResultInternFormation
 );
 router.get('/search', searchResults);
+router.get('/getResultReport/:internId/:formationId', getStudentReport);
 
 export default router;

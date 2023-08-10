@@ -9,15 +9,16 @@ export const formatDate = (dateString) => {
         minute: '2-digit',
     };
 
-    return dateObj.toLocaleString(undefined, options);
+    return dateObj.toLocaleString('fr-FR', options); // Specify 'fr-FR' for French locale
 };
+
 export const convertDate = (dateString) => {
     const dateObj = new Date(dateString);
 
-    // Array of month names
+    // Array of month names in French
     const months = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
+        "Juil", "Août", "Sep", "Oct", "Nov", "Déc"
     ];
 
     // Extract year, month, and day
@@ -25,7 +26,7 @@ export const convertDate = (dateString) => {
     const month = months[dateObj.getMonth()];
     const day = dateObj.getDate();
 
-    // Format the date as "MM-DD-YYYY"
+    // Format the date as "DD Mon, YYYY"
     const formattedDate = `${day} ${month}, ${year}`;
 
     return formattedDate;
