@@ -171,6 +171,7 @@ export const createClass = asyncHandler(async (req, res) => {
             assignments: [],
             announcements: [],
             interns: interns || [], // Add interns array to the new class
+            teacher: req.user._id, // Include teacher's ID
         };
 
         formation.classes.push(newClass);
@@ -245,6 +246,7 @@ export const createAssignment = asyncHandler(async (req, res) => {
             description,
             dueDate,
             subject,
+            teacher: req.user._id, // Include the teacher's ID
         };
 
         // Check if a file was uploaded
@@ -260,6 +262,7 @@ export const createAssignment = asyncHandler(async (req, res) => {
 
         // Get the assignment that was just added to the array
         const addedAssignment = classInfo.assignments[classInfo.assignments.length - 1];
+
 
         // Generate attachment URL based on your URL generation logic using the assignment's _id
         if (addedAssignment.attachmentOriginalName && addedAssignment.attachment) {
@@ -277,7 +280,6 @@ export const createAssignment = asyncHandler(async (req, res) => {
 
 // Create Announcement for a Class
 export const createAnnouncement = asyncHandler(async (req, res) => {
-
     const { formationId, className } = req.params;
     const { title, content } = req.body;
 
@@ -297,18 +299,26 @@ export const createAnnouncement = asyncHandler(async (req, res) => {
             return;
         }
 
-        classInfo.announcements.push({
+        const teacherId = req.user._id; // Get the teacher's ID from the request
+
+        const announcement = {
             title,
             content,
-        });
+            teacher: teacherId, // Include the teacher's ID
+        };
+
+        classInfo.announcements.push(announcement);
 
         await formation.save();
+
+
 
         res.status(201).json(formation);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+
 // Get Assignments for a Class
 export const getClassAssignments = asyncHandler(async (req, res) => {
     const { formationId, className } = req.params; // Update to use className
@@ -329,14 +339,18 @@ export const getClassAssignments = asyncHandler(async (req, res) => {
             return;
         }
 
-        const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl }) => ({
+        // Populate teacher information before sending the response
+        await Formation.populate(classInfo, { path: 'assignments.teacher' });
+
+        const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl, teacher }) => ({
             _id,
             title,
             description,
             dueDate,
             subject,
             attachmentOriginalName,
-            attachmentUrl
+            attachmentUrl,
+            teacher, // Include teacher information
         }));
 
         res.status(200).json(filteredAssignments);
@@ -368,8 +382,10 @@ export const getAssignmentById = asyncHandler(async (req, res) => {
             res.status(404).json({ message: "Assignment not found in class" });
             return;
         }
+        // Populate teacher information before sending the response
+        await Formation.populate(classInfo, { path: 'assignments.teacher' });
 
-        const { _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl } = assignment;
+        const { _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl, teacher, createdAt, updatedAt } = assignment;
 
         res.status(200).json({
             _id,
@@ -378,7 +394,10 @@ export const getAssignmentById = asyncHandler(async (req, res) => {
             dueDate,
             subject,
             attachmentOriginalName,
-            attachmentUrl
+            attachmentUrl,
+            teacher,
+            createdAt,
+            updatedAt
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -388,7 +407,7 @@ export const getAssignmentById = asyncHandler(async (req, res) => {
 
 // Get Announcements for a Class
 export const getClassAnnouncements = asyncHandler(async (req, res) => {
-    const { formationId, className } = req.params; // Update to use className
+    const { formationId, className } = req.params;
 
     try {
         const formation = await Formation.findById(formationId);
@@ -406,15 +425,36 @@ export const getClassAnnouncements = asyncHandler(async (req, res) => {
             return;
         }
 
-        const announcements = classInfo.announcements;
+        // Retrieve announcement IDs
+        const announcementIds = classInfo.announcements.map(announcement => announcement._id);
+
+        // Populate teacher information for announcements
+        const populatedAnnouncements = await Formation.populate(classInfo, {
+            path: 'announcements',
+            select: 'title content teacher',
+            populate: {
+                path: 'teacher',
+                select: 'firstName lastName',
+            },
+        });
+
+        // Construct the response
+        const announcements = populatedAnnouncements.announcements.map(announcement => ({
+            _id: announcement._id,
+            title: announcement.title,
+            content: announcement.content,
+            teacher: {
+                id: announcement.teacher._id,
+                firstName: announcement.teacher.firstName,
+                lastName: announcement.teacher.lastName
+            },
+        }));
 
         res.status(200).json(announcements);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
-// Get Assignments and Announcements for a Student's Level
 // Get Assignments and Announcements for a Student's Level
 export const getStudentLevelContent = asyncHandler(async (req, res) => {
     const { internId } = req.params;
@@ -435,7 +475,14 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         // Find assignments and announcements for the student's level
         const formations = await Formation.find({
             "classes.level": studentLevel,
-        });
+        })
+            .populate({
+                path: 'classes.assignments.teacher',
+                select: 'firstName lastName login',
+            }).populate({
+                path: 'classes.announcements.teacher',
+                select: 'firstName lastName login',
+            }); // Populate teacher for announcements as well
 
         console.log('studentLevel:', studentLevel);
 
@@ -449,7 +496,7 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
             filteredClasses.forEach((classInfo) => {
                 console.log('classInfo.level:', classInfo.level);
 
-                const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl }) => ({
+                const filteredAssignments = classInfo.assignments.map(({ _id, title, description, dueDate, subject, attachmentOriginalName, attachmentUrl, teacher, createdAt, updatedAt }) => ({
                     _id,
                     title,
                     description,
@@ -457,11 +504,20 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
                     subject,
                     attachmentOriginalName,
                     attachmentUrl,
+                    teacher,
+                    createdAt,
+                    updatedAt,
                     formation: { id: formation._id, name: formation.nom }, // Add formation information
                     class: { id: classInfo._id, name: classInfo.name }, // Add class information
                 }));
                 assignments.push(...filteredAssignments);
-                announcements.push(...classInfo.announcements);
+
+                // Populate teacher information in announcements
+                const populatedAnnouncements = classInfo.announcements.map(announcement => ({
+                    ...announcement.toObject(),
+                    teacher: announcement.teacher,
+                }));
+                announcements.push(...populatedAnnouncements);
 
                 formationsDetails.push({
                     formation: {
@@ -484,5 +540,4 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 

@@ -31,10 +31,10 @@ router.delete("/delete/:id", deleteFormation);
 router.post("/:id/reviews", protect, createFormationReview);
 
 // New routes for assignments and announcements
-router.post('/:formationId/classes', createClass);
+router.post('/:formationId/classes', protect, createClass);
 router.post(
   '/:formationId/classes/:className/assignments',
-  upload.single('attachment'),
+  upload.single('attachment'), protect,
   createAssignment
 );
 router.put(
@@ -44,7 +44,7 @@ router.put(
 router.post("/:formationId/classes/:className/announcements", protect, createAnnouncement);
 router.get("/:formationId/classes/:className/assignments", getClassAssignments);
 router.get("/:formationId/classes/:className/:assignmentId", getAssignmentById);
-router.get("/:formationId/classes/:className/announcements", getClassAnnouncements);
+router.get("/:formationId/class/:className/announcements", getClassAnnouncements);
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
 
 export default router;

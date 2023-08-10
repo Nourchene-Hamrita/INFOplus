@@ -10,6 +10,7 @@ import formationRoutes from './routes/formations.js';
 import emailRoutes from './routes/emailRoutes.js';
 import reclamationRoutes from './routes/reclamation.js';
 import paymentRoutes from './routes/paiement.js';
+import resultRoutes from './routes/result.js';
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -48,6 +49,7 @@ app.use("/api/formations",formationRoutes);
 app.use("/api/email",emailRoutes);
 app.use("/api/reclamations",reclamationRoutes);
 app.use("/api/payments",paymentRoutes);
+app.use("/api/results",resultRoutes);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

@@ -19,7 +19,7 @@ import { Animations } from '../../constants/Animations';
 import axios from 'axios';
 import { BASE_URL } from '../../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { convertDate, formatDate } from '../../utils/date';
+
 
 const colorAr = [
     '#637aff',
@@ -33,6 +33,7 @@ const colorAr = [
     '#ff4c98',
 ]
 const bgColor = (i) => colorAr[i % colorAr.length];
+
 const openFile = (attachmentUrl) => {
     // Open the PDF in a full-screen viewer using Linking
     Linking.openURL(attachmentUrl);
@@ -47,7 +48,12 @@ const ListItem = ({ item, index, animation, navigation }) => {
             <View style={styles.listItem}>
                 <TouchableOpacity
                     activeOpacity={0.7}
-                    onPress={() => openFile(item.attachmentUrl)}>
+                    onPress={() => navigation.navigate('AssignmentDetail',
+                        {
+                            formationId: item.formation.id,
+                            className: item.class.name,
+                            assignmentId: item._id
+                        })}>
 
                     <View style={[styles.image, { backgroundColor: bgColor(index) }]}>
                         <Text style={styles.subjectText}>{item.subject}</Text>
@@ -149,8 +155,9 @@ const Assignment = ({ navigation }) => {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingTop: 16,
+                    paddingTop:16,
                     paddingLeft: 16,
+                    marginBottom:5
                 }}
             >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>
@@ -165,7 +172,7 @@ const Assignment = ({ navigation }) => {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center' }}>
+                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
                     <Text style={{
                         color: COLORS.white,
                         fontSize: 20,

@@ -15,6 +15,39 @@ const reviewSchema = mongoose.Schema(
         timestamps: true,
     }
 )
+const AssignmentSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    dueDate: { type: Date },
+    subject: { type: String },
+    attachment: { type: Buffer },
+    attachmentMimeType: { type: String },
+    attachmentOriginalName: { type: String },
+    attachmentUrl: { type: String },
+    teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to teacher
+
+},
+    {
+        timestamps: true,
+    });
+
+const AnnouncementSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    content: { type: String },
+    teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to teacher
+}, {
+    timestamps: true,
+});
+const ClassSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    level: { type: String, required: true },
+    subjects: [{ type: String }],
+    assignments: [AssignmentSchema],
+    announcements: [AnnouncementSchema],
+    interns: [{ intern: { type: mongoose.Schema.Types.ObjectId, ref: 'Intern.user' } }],
+    teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to teacher
+});
+
 
 const FormationSchema = new mongoose.Schema(
     {
@@ -53,40 +86,8 @@ const FormationSchema = new mongoose.Schema(
         prix: {
             type: Number,
         },
-        classes: [
-            {
-                name: { type: String, required: true },
-                level: { type: String, required: true }, // Corresponding level
-                subjects: [{ type: String }], // List of subjects in the class
-                assignments: [
-                    {
-                        title: { type: String, required: true },
-                        description: { type: String },
-                        dueDate: { type: Date },
-                        subject: { type: String },
-                        attachment: { type: Buffer },
-                        attachmentMimeType: { type: String },
-                        attachmentOriginalName: { type: String }, // Original name of the attached file
-                        attachmentUrl: { type: String }, // URL to access the attached file
-                    },
-                ],
-                announcements: [
-                    {
-                        title: { type: String, required: true },
-                        content: { type: String },
-                    },
-                ],
-                interns: [
-                    {
-                        intern: {
-                            type: mongoose.Schema.Types.ObjectId,
-                            ref: 'Intern.user',
-                        },
+        classes: [ClassSchema],
 
-                    },
-                ],
-            },
-        ],
     },
     { timestamps: true }
 );

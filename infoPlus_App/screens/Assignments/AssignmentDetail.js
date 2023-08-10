@@ -19,8 +19,8 @@ import useFetch from '../../hooks/useFetch';
 import { BASE_URL } from '../../utils/config';
 import { useRoute } from '@react-navigation/native';
 import { COLORS } from '../../constants';
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { convertDate, formatDate } from '../../utils/date';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { formatDate } from '../../utils/date';
 import * as Animatable from 'react-native-animatable';
 
 const openFile = (attachmentUrl) => {
@@ -44,7 +44,7 @@ const AssignmentDetail = ({ navigation }) => {
         // Display a loading indicator while fetching the event details
         return (
             <View style={[styles.container, styles.horizontal]}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
+                <ActivityIndicator size="large" color={COLORS.white} />
             </View>
         );
     }
@@ -82,6 +82,7 @@ const AssignmentDetail = ({ navigation }) => {
                     alignItems: 'center',
                     paddingTop: 16,
                     paddingLeft: 16,
+                    marginBottom:5
                 }}
             >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>
@@ -96,7 +97,7 @@ const AssignmentDetail = ({ navigation }) => {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center' }}>
+                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
                     <Text style={{
                         color: COLORS.white,
                         fontSize: 20,
@@ -130,7 +131,7 @@ const AssignmentDetail = ({ navigation }) => {
                     />
                     <Text
                         style={{
-                            fontSize: 12,
+                            fontSize: 18,
                             color: COLORS.primary,
                         }}>
                         {assignmentDetails.subject}
@@ -166,10 +167,11 @@ const AssignmentDetail = ({ navigation }) => {
                         }}
                     />
                 </View>
+
                 <Text
                     style={{
-                        fontSize: 12,
-                        color: COLORS.red,
+                        fontSize: 14,
+                        color: COLORS.black,
                         fontWeight: '400',
                         letterSpacing: 1,
                         opacity: 0.5,
@@ -178,11 +180,11 @@ const AssignmentDetail = ({ navigation }) => {
                         maxHeight: 44,
                         marginBottom: 18,
                     }}>
-                    {assignmentDetails.attachmentOriginalName}
+                    {assignmentDetails.teacher.firstName} {assignmentDetails.teacher.lastName}
                 </Text>
                 <Text
                     style={{
-                        fontSize: 12,
+                        fontSize: 14,
                         color: COLORS.black,
                         fontWeight: '400',
                         letterSpacing: 1,
@@ -193,6 +195,20 @@ const AssignmentDetail = ({ navigation }) => {
                         marginBottom: 18,
                     }}>
                     {assignmentDetails.description}
+                </Text>
+                <Text
+                    onPress={() => openFile(assignmentDetails.attachmentUrl)}
+                    style={{
+                        fontSize: 12,
+                        color: COLORS.red,
+                        fontWeight: '400',
+                        letterSpacing: 1,
+                        lineHeight: 20,
+                        maxWidth: '85%',
+                        maxHeight: 44,
+                        marginBottom: 18,
+                    }}>
+                    {assignmentDetails.attachmentOriginalName}
                 </Text>
                 <View
                     style={{
@@ -214,7 +230,7 @@ const AssignmentDetail = ({ navigation }) => {
                         <View
                             style={{
                                 color: COLORS.blue,
-                                backgroundColor: COLORS.lightBlue,
+                                backgroundColor: COLORS.primary + 10,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: 12,
@@ -222,14 +238,15 @@ const AssignmentDetail = ({ navigation }) => {
                                 marginRight: 10,
                             }}>
                             <FontAwesome5
-                                name="map-marker-alt"
+                                name="calendar-check"
                                 style={{
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     color: COLORS.primary,
                                 }}
                             />
                         </View>
-                        <Text style={{ color: COLORS.darkgray }}>{assignmentDetails.dueDate}</Text>
+                        <Text style={{ color: COLORS.primary }}>Crée le : </Text>
+                        <Text style={{ color: COLORS.darkgray }}>{formatDate(assignmentDetails.createdAt)}</Text>
                     </View>
                     <View
                         style={{
@@ -241,7 +258,7 @@ const AssignmentDetail = ({ navigation }) => {
                         <View
                             style={{
                                 color: COLORS.blue,
-                                backgroundColor: COLORS.lightBlue,
+                                backgroundColor: COLORS.primary + 10,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: 12,
@@ -251,12 +268,13 @@ const AssignmentDetail = ({ navigation }) => {
                             <FontAwesome5
                                 name="calendar-alt"
                                 style={{
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     color: COLORS.primary,
                                 }}
                             />
                         </View>
-                        <Text style={{ color: COLORS.darkgray }}>{formatDate(assignmentDetails.dueDate)}</Text>
+                        <Text style={{ color: COLORS.primary }}>Modifié le : </Text>
+                        <Text style={{ color: COLORS.darkgray }}>{formatDate(assignmentDetails.updatedAt)}</Text>
                     </View>
                     <View
                         style={{
@@ -269,7 +287,7 @@ const AssignmentDetail = ({ navigation }) => {
                         <View
                             style={{
                                 color: COLORS.blue,
-                                backgroundColor: COLORS.lightBlue,
+                                backgroundColor: COLORS.lightRed,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: 12,
@@ -279,11 +297,12 @@ const AssignmentDetail = ({ navigation }) => {
                             <FontAwesome5
                                 name="calendar-times"
                                 style={{
-                                    fontSize: 14,
-                                    color: COLORS.primary,
+                                    fontSize: 16,
+                                    color: COLORS.red,
                                 }}
                             />
                         </View>
+                        <Text style={{ color: COLORS.red }}>Date limite : </Text>
                         <Text style={{ color: COLORS.darkgray }}>{formatDate(assignmentDetails.dueDate)}</Text>
                     </View>
                     <Entypo
@@ -298,20 +317,26 @@ const AssignmentDetail = ({ navigation }) => {
                     style={{
                         paddingHorizontal: 16,
                     }}>
-                    {Date.now() > assignmentDetails.dueDate ? (
+                    {Date.now() > new Date(assignmentDetails.dueDate).getTime() ? (
                         <Text
                             style={{
                                 fontSize: 18,
                                 fontWeight: '500',
                                 maxWidth: '85%',
-                                color: COLORS.black,
+                                color: COLORS.red,
                                 marginBottom: 4,
                             }}>
-                            Prix: {assignmentDetails.title}.00
+                            Le devoir a expiré
                         </Text>
                     ) : (
-                        <Text>
-                            test.....
+                        <Text  style={{
+                            fontSize: 18,
+                            fontWeight: '500',
+                            maxWidth: '85%',
+                            color: COLORS.green,
+                            marginBottom: 4,
+                        }}>
+                            Le devoir est encore valide
                         </Text>
                     )}
 

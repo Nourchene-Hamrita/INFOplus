@@ -118,6 +118,7 @@ const TimeTable = ({ navigation }) => {
                     alignItems: 'center',
                     paddingTop: 16,
                     paddingLeft: 16,
+                    marginBottom:5
                 }}
             >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>
@@ -141,7 +142,7 @@ const TimeTable = ({ navigation }) => {
                     }}>Emploi du temps</Text>
                 </View>
             </View>
-            <View style={{
+            <Animatable.View animation="fadeInUpBig" style={{
                 flex: 1,
                 backgroundColor: '#fff',
                 borderTopLeftRadius: 30,
@@ -164,7 +165,7 @@ const TimeTable = ({ navigation }) => {
                     />
                 </Animatable.View>
 
-            </View>
+            </Animatable.View>
         </View>
     );
 };

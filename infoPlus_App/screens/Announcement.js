@@ -1,44 +1,32 @@
-import React, { useEffect, useRef, useContext } from 'react'
-import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useRef, useContext, useState } from 'react'
+import { Dimensions, FlatList, StyleSheet, Text, ActivityIndicator, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import * as Animatable from 'react-native-animatable'
-import { Animations } from '../../constants/Animations'
+import { Animations } from '../constants/Animations'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { COLORS } from '../../constants';
-import { AuthContext } from '../../context/AuthContext';
-import useFetch from '../../hooks/useFetch';
-import { BASE_URL } from '../../utils/config';
-import { formatDate } from '../../utils/date';
-
-const ReclamationItem = ({ item: { subject, description, state, date }, index, animation }) => {
-    let stateText = "";
-    let stateColor = COLORS.gray; // Default color
-
-    if (state === "Pending") {
-        stateText = "En attente";
-        stateColor = COLORS.red;
-    } else if (state === "In Progress") {
-        stateText = "En cours";
-        stateColor = COLORS.blue;
-    } else if (state === "Resolved") {
-        stateText = "Résolu";
-        stateColor = COLORS.green;
-    }
-
-
+import { COLORS, FONTS } from '../constants';
+import { AuthContext } from '../context/AuthContext';
+import useFetch from '../hooks/useFetch';
+import { BASE_URL } from '../utils/config';
+import { formatDate } from '../utils/date';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from 'react-test-renderer';
+const AnnouncementItem = ({ item: { title, content, date,teacher,createdAt }, index, animation }) => {
     return (
         <Animatable.View animation={animation} duration={1000} delay={index * 300}>
             <TouchableOpacity style={styles.item}>
                 <View style={styles.avatar}>
-                    <Text style={styles.letter}>{subject.slice(0, 1).toUpperCase()}</Text>
+                    <Text style={styles.letter}>{teacher.firstName.slice(0, 1).toUpperCase()}</Text>
                 </View>
                 <View style={styles.details}>
                     <View style={styles.rowContainer}>
-                        <Text style={styles.name}>{subject}</Text>
-                        <Text style={[styles.number, { color: stateColor }]}>{stateText}</Text>
+                        <Text style={styles.name}>{teacher.firstName} {teacher.lastName}</Text>
+                        <Text >{formatDate(createdAt)}</Text>
                     </View>
                     <View style={{ flexDirection: 'column' }}>
-                        <Text numberOfLines={1}>{description}</Text>
-                        <Text >{formatDate(date)}</Text>
+                        <Text style={{...FONTS.h4,color:COLORS.primary}} numberOfLines={1}>{title}</Text>
+                        <Text numberOfLines={1}>{content}</Text>
+                        
                     </View>
                 </View>
             </TouchableOpacity>
@@ -46,19 +34,43 @@ const ReclamationItem = ({ item: { subject, description, state, date }, index, a
     );
 }
 
-export default function ReclamationList({ route, navigation }) {
+export default function Announcement({ route, navigation }) {
+    const [announcements, setAnnouncements] = useState([]);
+    const [loading, setLoading] = useState(true);
     const { userInfo } = useContext(AuthContext);
-    const { data, loading, error } = useFetch(
-        `${BASE_URL}/reclamations/getReclamationsByUserId/${userInfo.details._id}`
-    );
-    console.log(data)
+
     const viewRef = useRef(null);
     const animation = Animations[Math.floor(Math.random() * Animations.length)]
     console.log(animation);
     const ItemSeparator = () => <View style={styles.separator} />
 
+    useEffect(() => {
+        // Fetch the assignments from the API with the bearer token
+        const fetchData = async () => {
+            try {
+                const token = await AsyncStorage.getItem('userToken');
+                const axiosInstance = axios.create({
+                    baseURL: BASE_URL,
+                    headers: {
+                        'authorization': `Bearer ${token}`
+                    }
+                });
+
+                const response = await axiosInstance.get(`/formations/${userInfo.details._id}/level-content`);
+                console.log("API Response:", response.data);
+                setAnnouncements(response.data.announcements);
+                setLoading(false);
+            } catch (error) {
+                console.error(error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [userInfo.details._id]);
+
     const renderItem = ({ item, index }) => (
-        <ReclamationItem item={item} index={index} animation={animation} />)
+        <AnnouncementItem item={item} index={index} animation={animation} />)
 
     const ListEmptyComponent = () => {
         const anim = {
@@ -79,6 +91,8 @@ export default function ReclamationList({ route, navigation }) {
             </Animatable.View>
         )
     }
+
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             viewRef.current.animate({ 0: { opacity: 0.5, }, 1: { opacity: 1 } });
@@ -101,8 +115,8 @@ export default function ReclamationList({ route, navigation }) {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
-                    <Text style={styles.headerText}>Mes Réclamations</Text>
+                <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
+                    <Text style={styles.headerText}>Annonces</Text>
                 </View>
 
             </View>
@@ -119,7 +133,7 @@ export default function ReclamationList({ route, navigation }) {
                     easing={'ease-in-out'}
                     duration={500}>
                     <FlatList
-                        data={data}
+                        data={announcements}
                         keyExtractor={(_, i) => String(i)}
                         renderItem={renderItem}
                         showsVerticalScrollIndicator={false}
@@ -135,7 +149,8 @@ export default function ReclamationList({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.primary
+        backgroundColor: COLORS.primary,
+        justifyContent: 'center',
     },
     item: {
         backgroundColor: COLORS.white,
@@ -150,7 +165,7 @@ const styles = StyleSheet.create({
         alignItems: 'center', // Align header contents to the center
         paddingHorizontal: 10,
         flexDirection: 'row', // Display the icon and text in a row
-        paddingTop:5,
+        paddingTop: 5,
 
     },
     headerText: {

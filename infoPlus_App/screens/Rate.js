@@ -57,7 +57,7 @@ const Rate = ({ navigation }) => {
                 console.log('Error fetching intern formations:', error);
             }
         };
-    
+
         // Check if userInfo is available
         if (userInfo) {
             // Check if userInfo.role is 'intern'
@@ -79,13 +79,13 @@ const Rate = ({ navigation }) => {
                         console.log('Error fetching formations data:', error);
                     }
                 };
-    
+
                 // Fetch all formations when the user is not an intern
                 fetchAllFormations();
             }
         }
     }, [userInfo]);
-    
+
 
 
 
@@ -146,93 +146,105 @@ const Rate = ({ navigation }) => {
                             name="chevron-left"
                             style={{
                                 fontSize: 18,
-                                color: COLORS.primary,
+                                color: COLORS.white,
                                 padding: 12,
                                 backgroundColor: 'transparent',
                                 borderRadius: 10,
                             }}
                         />
                     </TouchableOpacity>
-                    <Text style={{
-                        color: COLORS.primary, fontSize: 18,
-                        fontWeight: '600', marginTop: 7
-                    }}>FeedBack</Text>
-                </View>
-                <Animatable.View style={styles.centeredTextContainer} animation="flipInX">
-                    <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
-                        Évaluez Votre Expérience
-                    </Text>
+                    <View style={{ flex: 1, alignItems: 'center',marginRight:20}}>
+                        <Text style={{
+                            color: COLORS.white, fontSize: 20,
+                            fontWeight: '600', marginTop: 7
+                        }}>FeedBack</Text>
+                    </View>
 
-                </Animatable.View>
-                <Animatable.View style={styles.content} animation="slideInUp">
-                    <Text style={{ ...FONTS.h4, color: COLORS.gray }}>
-                        Êtes-vous satisfait(e) ?{" "}
-                    </Text>
-                    <Text style={{ ...FONTS.h2, color: COLORS.gray, marginTop: 20 }}>
-                        Choisissez une formation
-                    </Text>
-                    <View>
-                        {/* ComboBox to display formations */}
-                        <View style={[styles.comboBoxContainer, { width: comboBoxWidth }]}>
-                            <Picker
-                                ref={pickerRef}
-                                selectedValue={selectedFormation}
-                                onValueChange={(itemValue, itemIndex) => setSelectedFormation(itemValue)}
-                                style={[styles.pickerStyle, { height: 50 }]}
-                            >
-                                {formations.map((formation) => (
-                                    <Picker.Item key={formation._id} label={formation.nom} value={formation._id} />
-                                ))}
-                            </Picker>
+                </View>
+                <Animatable.View style={{
+                    flex: 1,
+                    backgroundColor: '#fff',
+                    borderTopLeftRadius: 30,
+                    borderTopRightRadius: 30,
+                    paddingVertical: 40,
+                    paddingHorizontal: 5,
+                }} animation="fadeInUpBig">
+                    <Animatable.View style={styles.centeredTextContainer} animation="flipInX">
+                        <Text style={{ ...FONTS.h1, color: COLORS.primary }}>
+                            Évaluez Votre Expérience
+                        </Text>
+
+                    </Animatable.View>
+                    <Animatable.View style={styles.content} animation="slideInUp">
+                        <Text style={{ ...FONTS.h4, color: COLORS.gray }}>
+                            Êtes-vous satisfait(e) ?{" "}
+                        </Text>
+                        <Text style={{ ...FONTS.h2, color: COLORS.gray, marginTop: 20 }}>
+                            Choisissez une formation
+                        </Text>
+                        <View>
+                            {/* ComboBox to display formations */}
+                            <View style={[styles.comboBoxContainer, { width: comboBoxWidth }]}>
+                                <Picker
+                                    ref={pickerRef}
+                                    selectedValue={selectedFormation}
+                                    onValueChange={(itemValue, itemIndex) => setSelectedFormation(itemValue)}
+                                    style={[styles.pickerStyle, { height: 50 }]}
+                                >
+                                    {formations.map((formation) => (
+                                        <Picker.Item key={formation._id} label={formation.nom} value={formation._id} />
+                                    ))}
+                                </Picker>
+                            </View>
+
                         </View>
 
-                    </View>
 
+                        <View style={styles.ratingContainer}>
+                            {maxRating.map((item, index) => (
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    key={index}
+                                    onPress={() => onRateButtonPress(item)}
+                                >
+                                    <Text style={styles.star}>
+                                        {item <= defaultRating ? '★' : '☆'}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        <Text style={styles.textStyle}>
+                            {/*To show the rating selected*/}
+                            {defaultRating} / {Math.max.apply(null, maxRating)}
+                        </Text>
 
-                    <View style={styles.ratingContainer}>
-                        {maxRating.map((item, index) => (
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                key={index}
-                                onPress={() => onRateButtonPress(item)}
-                            >
-                                <Text style={styles.star}>
-                                    {item <= defaultRating ? '★' : '☆'}
-                                </Text>
+                        <View style={styles.commentBox}>
+                            <TextInput
+                                placeholder="Dites-nous ce qui peut être amélioré ..."
+                                placeholderTextColor={COLORS.gray}
+                                style={{ color: 'black' }}
+                                value={comment}
+                                onChangeText={setComment}
+                                multiline
+                            />
+                        </View>
+                        <View style={styles.button}>
+                            <TouchableOpacity style={[styles.submit, { width: buttonWidth }]} onPress={handleReviewSubmit}>
+                                <LinearGradient colors={['#345fb4', '#89cff0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.signIn}>
+                                    <Text style={[styles.textSubmit, { color: '#fff' }]}>Envoyer</Text>
+                                    <Image
+                                        source={icons.send}
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            tintColor: COLORS.white,
+                                            marginLeft: 7
+                                        }}
+                                    />
+                                </LinearGradient>
                             </TouchableOpacity>
-                        ))}
-                    </View>
-                    <Text style={styles.textStyle}>
-                        {/*To show the rating selected*/}
-                        {defaultRating} / {Math.max.apply(null, maxRating)}
-                    </Text>
-
-                    <View style={styles.commentBox}>
-                        <TextInput
-                            placeholder="Dites-nous ce qui peut être amélioré ..."
-                            placeholderTextColor={COLORS.gray}
-                            style={{ color: 'black' }}
-                            value={comment}
-                            onChangeText={setComment}
-                            multiline
-                        />
-                    </View>
-                    <View style={styles.button}>
-                        <TouchableOpacity style={[styles.submit, { width: buttonWidth }]} onPress={handleReviewSubmit}>
-                            <LinearGradient colors={['#345fb4', '#89cff0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.signIn}>
-                                <Text style={[styles.textSubmit, { color: '#fff' }]}>Envoyer</Text>
-                                <Image
-                                    source={icons.send}
-                                    style={{
-                                        width: 20,
-                                        height: 20,
-                                        tintColor: COLORS.white,
-                                        marginLeft: 7
-                                    }}
-                                />
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    </View>
+                        </View>
+                    </Animatable.View>
                 </Animatable.View>
             </SafeAreaView>
         </KeyboardAvoiding>
@@ -244,11 +256,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: COLORS.primary
     },
     header: {
-        height: 50,
+        height: 80,
         width: '100%',
-        alignItems: 'flex-start', // Align header contents to the left (start)
+        justifyContent: 'space-between',
+        alignItems: 'center',
         paddingHorizontal: 10,
         flexDirection: 'row',
         paddingTop: 10,

@@ -13,6 +13,7 @@ import { AuthContext } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/config';
 import * as Animatable from 'react-native-animatable';
+import { StatusBar } from 'expo-status-bar';
 
 const Home = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
@@ -106,6 +107,9 @@ const Home = ({ navigation }) => {
                 break;
             case 7:
                 navigation.navigate('Reclamation');
+                break;
+            case 8:
+                navigation.navigate('Announcement');
                 break;
 
             default:
@@ -424,6 +428,7 @@ const Home = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+            {/* <StatusBar backgroundColor={COLORS.white} barStyle="light-content" /> */}
             {renderPromos()}
         </SafeAreaView>
     );

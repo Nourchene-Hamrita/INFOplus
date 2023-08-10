@@ -17,6 +17,7 @@ import Reclamation from '../screens/Reclamations/Reclamation';
 import ReclamationList from '../screens/Reclamations/ReclamationsList';
 import ViewAll from '../screens/Events/ViewAll';
 import AssignmentDetail from '../screens/Assignments/AssignmentDetail';
+import Announcement from '../screens/Announcement';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -116,6 +117,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="Assignment"
                 component={Assignment}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Announcement"
+                component={Announcement}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

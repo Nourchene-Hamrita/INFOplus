@@ -61,26 +61,36 @@ const Reclamation = ({ navigation }) => {
                             name="chevron-left"
                             style={{
                                 fontSize: 18,
-                                color: COLORS.primary,
+                                color: COLORS.white,
                                 padding: 12,
                                 backgroundColor: 'transparent',
                                 borderRadius: 10,
                             }}
                         />
                     </TouchableOpacity>
-                    <Text style={{
-                        color: COLORS.primary, fontSize: 18,
-                        fontWeight: '600', marginTop: 7
-                    }}>Réclamations</Text>
+                    <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
+                        <Text style={{
+                            color: COLORS.white, fontSize:20,
+                            fontWeight: '600', marginTop: 7
+                        }}>Réclamations</Text>
+                    </View>
                 </View>
                 {/* Properly display the image */}
+                <Animatable.View style={{
+                    flex: 1,
+                    backgroundColor: '#fff',
+                    borderTopLeftRadius: 30,
+                    borderTopRightRadius: 30,
+                    paddingVertical: 5,
+                    paddingHorizontal: 5,
+                }} animation="fadeInUpBig">
                 <View style={styles.imageContainer}>
 
                     <Animatable.Image
                         animation="bounceIn"
                         duration={1500}
                         source={images.reclamation}
-                        resizeMode="cover"
+                        resizeMode="stretch"
                         style={styles.image}
                     />
                 </View>
@@ -122,6 +132,7 @@ const Reclamation = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </Animatable.View>
+                </Animatable.View>
             </SafeAreaView>
         </KeyboardAvoiding>
     );
@@ -132,14 +143,15 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor:COLORS.primary
     },
     header: {
-        height: 50,
+        height: 70,
         width: '100%',
         alignItems: 'flex-start', // Align header contents to the left (start)
         paddingHorizontal: 10,
         flexDirection: 'row',
-        paddingTop: 10,
+        paddingTop: 25,
     },
     centeredTextContainer: {
         alignItems: 'center',
@@ -205,17 +217,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     imageContainer: {
-        height: 180,
-        width: '100%',
+        height: 200,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 20,
-        marginBottom: 50,
+        marginBottom: 40,
         marginTop: 30,
     },
     image: {
-        width: '100%',
-        height: '150%',
+        width: '90%',
+        height: '100%',
         borderRadius: 20
 
     },
