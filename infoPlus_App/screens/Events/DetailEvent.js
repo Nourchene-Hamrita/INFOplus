@@ -164,7 +164,8 @@ const DetailEvent = ({ navigation }) => {
                 </View>
                 <View
                     style={{
-                        paddingHorizontal: 16,
+                        paddingHorizontal:16,
+                        paddingVertical:20,
                         marginTop: 6,
 
                     }}>
@@ -337,7 +338,7 @@ const DetailEvent = ({ navigation }) => {
                         style={{
                             paddingHorizontal: 16,
                         }}>
-                        <Text
+                        {eventDetails.price !== 0 ? <Text
                             style={{
                                 fontSize: 18,
                                 fontWeight: '500',
@@ -346,10 +347,17 @@ const DetailEvent = ({ navigation }) => {
                                 marginBottom: 4,
                             }}>
                             Prix: {eventDetails.price}.00
-                        </Text>
-                        <Text>
-                            test.....
-                        </Text>
+                        </Text > : <Text style={{
+                            fontSize: 18,
+                            fontWeight: '500',
+                            maxWidth: '85%',
+                            color: COLORS.primary,
+                            marginBottom: 4,
+                        }}>
+                            Gratuit
+                        </Text>}
+
+
                     </View>
                 </View>
             </ScrollView>

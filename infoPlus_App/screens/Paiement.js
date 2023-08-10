@@ -134,7 +134,6 @@ const Paiement = ({ navigation }) => {
                 backgroundColor: '#fff',
                 borderTopLeftRadius: 30,
                 borderTopRightRadius: 30,
-                paddingVertical:5,
                 paddingHorizontal: 30,
             }}>
                 <View style={styles.infoBoxWrapper}>

@@ -27,8 +27,8 @@ router.get(
     "/getResultByFormation/:formationId", getResultByFormation
 );
 router.get(
-    "/getResultIntern/:internId/:formationId/", getResultInternFormation
+    "/getResultIntern/:internId/:formationId", getResultInternFormation
 );
-router.get('/search',searchResults);
+router.get('/search', searchResults);
 
 export default router;

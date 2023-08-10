@@ -116,14 +116,23 @@ export const getResultInternFormation = async (req, res) => {
     try {
         const { internId, formationId } = req.params;
 
+        console.log("Intern ID:", internId);
+        console.log("Formation ID:", formationId);
+
         // Find the intern by their unique identifier
         const existingIntern = await Intern.findOne({ user: internId });
+
+        console.log("Existing Intern:", existingIntern);
+
         if (!existingIntern) {
-            return res.status(404).json({ message: "Intern not found" });
+            return res.status(404).json({
+                message: "Intern not found for the provided internId",
+                internId: internId,
+            });
         }
 
-        const result = await Result.findOne({
-            intern: internId,
+        const result = await Result.find({
+            intern: existingIntern.user, // Use the retrieved intern's user field
             formation: formationId,
         }).populate({
             path: 'intern',
@@ -137,11 +146,11 @@ export const getResultInternFormation = async (req, res) => {
         });
 
         if (!result) {
-            return res
-                .status(200)
-                .json({
-                    message: "No result found for this intern and formation",
-                });
+            return res.status(404).json({
+                message: "No result found for this intern and formation",
+                internId: internId,
+                formationId: formationId,
+            });
         } else {
             res.status(200).json(result);
         }
@@ -152,6 +161,9 @@ export const getResultInternFormation = async (req, res) => {
         });
     }
 };
+
+
+
 
 // Retrieve results for a specific formation and populate intern and teacher fields
 export const getResultByFormation = async (req, res) => {
