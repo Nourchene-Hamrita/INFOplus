@@ -86,7 +86,7 @@ export default function Announcement({ route, navigation }) {
                     duration={3000}
                     style={{ fontSize: 24 }}
                     iterationCount="infinite">
-                    Empty List!
+                    Liste Vide!
                 </Animatable.Text>
             </Animatable.View>
         )
@@ -115,7 +115,7 @@ export default function Announcement({ route, navigation }) {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
+                <View style={{ flex: 1, alignItems: 'center', marginRight: 30 }}>
                     <Text style={{
                         color: COLORS.white, fontSize: 20,
                         fontWeight: '600', marginTop: 10
