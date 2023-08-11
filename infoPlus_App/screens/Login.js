@@ -11,7 +11,7 @@ import { Formik } from 'formik';
 const { brand, darkLight, primary } = Colors;
 import KeyboardAvoiding from '../components/KeyboardAvoiding';
 //icons
-import { Ionicons, Octicons, Fontisto } from '@expo/vector-icons';
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { AuthContext } from '../context/AuthContext';
 

@@ -11,7 +11,7 @@ import { formatDate } from '../utils/date';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'react-test-renderer';
-const AnnouncementItem = ({ item: { title, content, date,teacher,createdAt }, index, animation }) => {
+const AnnouncementItem = ({ item: { title, content, date, teacher, createdAt }, index, animation }) => {
     return (
         <Animatable.View animation={animation} duration={1000} delay={index * 300}>
             <TouchableOpacity style={styles.item}>
@@ -24,9 +24,9 @@ const AnnouncementItem = ({ item: { title, content, date,teacher,createdAt }, in
                         <Text >{formatDate(createdAt)}</Text>
                     </View>
                     <View style={{ flexDirection: 'column' }}>
-                        <Text style={{...FONTS.h4,color:COLORS.primary}} numberOfLines={1}>{title}</Text>
+                        <Text style={{ ...FONTS.h4, color: COLORS.primary }} numberOfLines={1}>{title}</Text>
                         <Text numberOfLines={1}>{content}</Text>
-                        
+
                     </View>
                 </View>
             </TouchableOpacity>
@@ -116,7 +116,10 @@ export default function Announcement({ route, navigation }) {
                     />
                 </TouchableOpacity>
                 <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
-                    <Text style={styles.headerText}>Annonces</Text>
+                    <Text style={{
+                        color: COLORS.white, fontSize: 20,
+                        fontWeight: '600', marginTop: 7
+                    }}>Annonces</Text>
                 </View>
 
             </View>
@@ -160,13 +163,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     header: {
-        height: 50,
+        height: 70,
         width: '100%',
-        alignItems: 'center', // Align header contents to the center
+        alignItems: 'flex-start', // Align header contents to the left (start)
         paddingHorizontal: 10,
-        flexDirection: 'row', // Display the icon and text in a row
-        paddingTop: 5,
-
+        flexDirection: 'row',
+        paddingTop: 20,
     },
     headerText: {
         color: COLORS.white,

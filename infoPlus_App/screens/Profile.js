@@ -15,6 +15,7 @@ import { AuthContext } from '../context/AuthContext';
 import { convertDate } from '../utils/date';
 import user from "../assets/images/user.jpg"
 import { ScrollView } from 'react-native-gesture-handler';
+import * as Animatable from 'react-native-animatable';
 
 
 const Profile = ({ navigation }) => {
@@ -90,7 +91,7 @@ const Profile = ({ navigation }) => {
                     <Text style={{ color: "#fff", marginLeft: 20, fontSize: 16 }}>{userInfo.details.email}</Text>
                 </View>
             </View>
-            <View style={{
+            <Animatable.View animation="fadeInUpBig" style={{
                 flex: 1,
                 backgroundColor: '#fff',
                 borderTopLeftRadius: 30,
@@ -121,10 +122,10 @@ const Profile = ({ navigation }) => {
                 </View>
 
                 <View style={styles.menuWrapper}>
-                    <TouchableRipple onPress={() => { }}>
+                    <TouchableRipple onPress={() => { navigation.navigate('Result') }}>
                         <View style={styles.menuItem}>
                             <Icon name="school-outline" color={COLORS.primary} size={25} />
-                            <Text style={styles.menuItemText}>Résultat</Text>
+                            <Text style={styles.menuItemText}>Résultats</Text>
                         </View>
                     </TouchableRipple>
                     {userInfo.role !== 'intern' ? (
@@ -181,7 +182,7 @@ const Profile = ({ navigation }) => {
                         </View>
                     </TouchableRipple> */}
                 </View>
-            </View>
+            </Animatable.View>
         </ScrollView>
     );
 };

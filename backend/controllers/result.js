@@ -232,6 +232,71 @@ export const searchResults = async (req, res) => {
         });
     }
 };
+export const searchResult = async (req, res) => {
+    try {
+        const { internId, keywords } = req.query;
+
+        // Populate the 'formation' field first
+        const populatedResults = await Result.find({
+            'intern': internId,
+        }).populate({
+            path: 'formation',
+            select: 'nom',
+        });
+
+        // Filter the populated results based on the keywords for subject and formation.nom
+        const results = populatedResults.filter(result =>
+            result.scores.some(score =>
+                score.subject.match(new RegExp(keywords, 'i'))
+            ) || result.formation.nom.match(new RegExp(keywords, 'i'))
+        );
+
+        if (!results || results.length === 0) {
+            return res.status(404).json({ message: "No results found" });
+        }
+
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).json({
+            message: "Error searching for results",
+            error: error.message,
+        });
+    }
+};
+
+
+export const searchSubjectResults = async (req, res) => {
+    try {
+        const { internId, subject } = req.query;
+
+        // Find results for the specific intern in the specified subject
+        const results = await Result.find({
+            'intern': internId,
+            'scores.subject': { $regex: subject, $options: 'i' },
+        }).populate({
+            path: 'intern',
+            select: 'firstName lastName login',
+        }).populate({
+            path: 'teacher',
+            select: 'firstName lastName login',
+        }).populate({
+            path: 'formation',
+            select: 'nom',
+        });
+
+        if (!results || results.length === 0) {
+            return res.status(404).json({ message: "No results found" });
+        }
+
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).json({
+            message: "Error searching for results",
+            error: error.message,
+        });
+    }
+};
+
 export const getStudentReport = async (req, res) => {
     try {
         const { internId, formationId } = req.params;

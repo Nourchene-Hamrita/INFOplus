@@ -18,6 +18,7 @@ import ReclamationList from '../screens/Reclamations/ReclamationsList';
 import ViewAll from '../screens/Events/ViewAll';
 import AssignmentDetail from '../screens/Assignments/AssignmentDetail';
 import Announcement from '../screens/Announcement';
+import Search from '../screens/Search';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -192,7 +193,7 @@ const Tabs = () => {
                     />
                 )
             }} />
-            <Tab.Screen name='Search' component={SignUp} options={{
+            <Tab.Screen name='Search' component={Search} options={{
                 tabBarIcon: ({ focused }) => (
                     <Image
                         source={icons.search}

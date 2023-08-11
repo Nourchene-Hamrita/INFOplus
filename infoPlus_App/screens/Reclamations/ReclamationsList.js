@@ -74,7 +74,7 @@ export default function ReclamationList({ route, navigation }) {
                     duration={3000}
                     style={{ fontSize: 24 }}
                     iterationCount="infinite">
-                    Empty List!
+                    Liste Vide!
                 </Animatable.Text>
             </Animatable.View>
         )
@@ -101,7 +101,7 @@ export default function ReclamationList({ route, navigation }) {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
+                <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
                     <Text style={styles.headerText}>Mes Réclamations</Text>
                 </View>
 
@@ -145,12 +145,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     header: {
-        height: 50,
+        height: 70,
         width: '100%',
         alignItems: 'center', // Align header contents to the center
         paddingHorizontal: 10,
         flexDirection: 'row', // Display the icon and text in a row
-        paddingTop:5,
+        paddingTop: 20,
 
     },
     headerText: {

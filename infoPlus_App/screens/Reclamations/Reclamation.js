@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start', // Align header contents to the left (start)
         paddingHorizontal: 10,
         flexDirection: 'row',
-        paddingTop: 25,
+        paddingTop: 20,
     },
     centeredTextContainer: {
         alignItems: 'center',

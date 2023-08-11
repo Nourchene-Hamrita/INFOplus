@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Text } from 'react-native-animatable';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { COLORS, FONTS, SIZES } from '../constants';
@@ -57,9 +57,11 @@ const Result = ({ navigation }) => {
             }
             const data = await response.json();
             const successRate = parseFloat(data.successRate);
+            setValue(successRate);
             setResultSummary({ ...data, successRate });
+
         } catch (error) {
-            console.error('Error fetching result summary:', error);
+            console.log('Error fetching result summary:', error);
             // setError('Failed to fetch result summary');
         }
     };
@@ -73,7 +75,7 @@ const Result = ({ navigation }) => {
             const data = await response.json();
             setResultRecords(data);
         } catch (error) {
-            console.error('Error fetching result records:', error);
+            console.log('Error fetching result records:', error);
             // setError('Failed to fetch result records');
         }
     };
@@ -88,7 +90,11 @@ const Result = ({ navigation }) => {
                 fetchResultRecords()
             ]).finally(() => setLoading(false));
         }
-    }, [selectedFormation]);
+        // Reset value if resultSummary is not available
+        if (!resultSummary.successRate) {
+            setValue(0);
+        }
+    }, [selectedFormation, setValue]);
 
     const screenWidth = Dimensions.get('window').width;
     const buttonWidth = screenWidth * 0.8;
@@ -134,6 +140,7 @@ const Result = ({ navigation }) => {
                     </Text>
 
                     {/* ComboBox to display formations */}
+
                     <View style={[styles.comboBoxContainer, { width: comboBoxWidth }]}>
                         <Picker
                             ref={pickerRef}
@@ -153,33 +160,47 @@ const Result = ({ navigation }) => {
                     </View>
 
                 </View>
-                <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-between' }}>
-                    <CircularProgress
-                        radius={60}
-                        value={resultSummary.successRate ? resultSummary.successRate : 0}
-                        textColor='#222'
-                        fontSize={20}
-                        valueSuffix={'%'}
-                        inActiveStrokeColor={'#2ecc71'}
-                        activeStrokeColor={COLORS.white}
-                        inActiveStrokeOpacity={0.2}
-                        inActiveStrokeWidth={6}
-                        duration={3000}
-                        onAnimationComplete={() => setValue(50)}
-                    />
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={COLORS.white} />
+                    </View>
+                ) : error ? (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                ) : (
+                    <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-between' }}>
 
-                    <CircularProgress
-                        radius={60}
-                        value={resultSummary.successRate ? 100 - resultSummary.successRate : 0}
-                        textColor='#222'
-                        fontSize={20}
-                        valueSuffix={'%'}
-                        activeStrokeColor={COLORS.red}
-                        inActiveStrokeOpacity={0.2}
-                        inActiveStrokeWidth={6}
-                        duration={4000}
-                    />
-                </View>
+                        <CircularProgress
+                            radius={60}
+                            value={resultSummary.successRate ? value : 0}
+                            textColor='#222'
+                            fontSize={20}
+                            valueSuffix={'%'}
+                            inActiveStrokeColor={'#2ecc71'}
+                            activeStrokeColor={COLORS.white}
+                            inActiveStrokeOpacity={0.2}
+                            inActiveStrokeWidth={6}
+                            duration={3000}
+                            setValue={setValue}
+                        // onAnimationComplete={() => setValue(50)}
+                        />
+
+                        <CircularProgress
+                            radius={60}
+                            value={resultSummary.successRate ? 100 - value : 0}
+                            textColor='#222'
+                            fontSize={20}
+                            valueSuffix={'%'}
+                            activeStrokeColor={COLORS.red}
+                            inActiveStrokeOpacity={0.2}
+                            inActiveStrokeWidth={6}
+                            setValue={setValue}
+                            duration={4000}
+                        />
+                    </View>
+                )}
+
             </View>
             <View style={styles.userInfoSection}>
                 {loading ? (
@@ -197,19 +218,11 @@ const Result = ({ navigation }) => {
                             <View>
                                 <View style={styles.row}>
                                     <Feather
-                                        name="calendar"
-                                        color={COLORS.white}
-                                        size={18}
-                                    />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Nombre total de jours : {resultRecords.createdAt}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Feather
                                         name="check-circle"
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Jours de présence: {resultRecords.createdAt}</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Taux de réussite:  {resultSummary.successRate}%</Text>
                                 </View>
                                 <View style={styles.row}>
                                     <Feather
@@ -217,7 +230,7 @@ const Result = ({ navigation }) => {
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Jours d'absence: {resultRecords.createdAt}</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Taux de d'échec:  {100 - resultSummary.successRate}%</Text>
                                 </View>
                                 <View style={styles.row}>
                                     <Feather
@@ -225,29 +238,30 @@ const Result = ({ navigation }) => {
                                         color={COLORS.white}
                                         size={18}
                                     />
-                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Pourcentage d'assiduité: {resultRecords.createdAt}%</Text>
+                                    <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Taux de réussite:  {resultSummary.successRate}%</Text>
                                 </View>
 
                             </View>
                         ) : (
-                            <Text style={{ color: COLORS.white }}>No result summary available !</Text>
+                            <Text style={{ color: COLORS.white }}>Aucun Rapport de Résultats Disponible !</Text>
                         )}
                     </View>
                 )}
             </View>
 
-            <View animation="fadeInUpBig" style={styles.footer}>
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={COLORS.primary} />
-                    </View>
-                ) : error ? (
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
-                    </View>
-                ) : (
-                    /* Display result records */
-                    resultRecords && resultRecords.length > 0 ? (
+
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+            ) : error ? (
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : (
+                <View animation="fadeInUpBig" style={styles.footer}>
+
+                    {resultRecords && resultRecords.length > 0 ? (
                         <>
                             {resultRecords.map((record, index) => (
                                 <View key={index} style={{
@@ -373,17 +387,26 @@ const Result = ({ navigation }) => {
                                 </View>
                             ))}
                         </>
-                    ) : (
-                        <Text>No result records found</Text>
-                    )
-                )}
+                    ) : (<View style={{ alignItems: 'center', paddingVertical: 20 }}>
+                        <Animatable.Image
+                            animation="bounceIn"
+                            duration={1500}
+                            style={styles.logo}
+                            resizeMode="stretch" source={require('../assets/images/logo.png')} />
+                        <Text>Aucun Résultat Disponible</Text></View>
 
-            </View>
+                    )}
+                </View>
+            )}
+
+
 
 
         </ScrollView>
     );
 }
+const { height } = Dimensions.get("screen");
+const height_logo = height * 0.4;
 
 const styles = StyleSheet.create({
     container: {
@@ -400,10 +423,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
 
     },
+    logo: {
+        width: '100%',
+        height: height_logo,
+    },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+
     },
     userInfoSection: {
         paddingHorizontal: 30,

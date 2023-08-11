@@ -259,13 +259,12 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primary
     },
     header: {
-        height: 80,
+        height: 70,
         width: '100%',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start', // Align header contents to the left (start)
         paddingHorizontal: 10,
         flexDirection: 'row',
-        paddingTop: 10,
+        paddingTop: 20,
     },
     centeredTextContainer: {
         alignItems: 'center',

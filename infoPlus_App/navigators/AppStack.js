@@ -12,6 +12,7 @@ import { Home } from '../screens';
 import Profile from '../screens/Profile';
 import Result from '../screens/Result';
 import Reclamation from '../screens/Reclamations/Reclamation';
+import ReclamationList from '../screens/Reclamations/ReclamationsList';
 
 const Drawer = createDrawerNavigator();
 
@@ -50,7 +51,7 @@ const AppStack = () => {
       />
       <Drawer.Screen
         name="Réclamations"
-        component={Reclamation}
+        component={ReclamationList}
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="chatbox-ellipses-outline" size={22} color={color} />
@@ -58,7 +59,7 @@ const AppStack = () => {
         }}
       />
       <Drawer.Screen
-        name="Résultat"
+        name="Résultats"
         component={Result}
         options={{
           drawerIcon: ({ color }) => (
