@@ -1,13 +1,7 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, Dimensions, TouchableOpacity, Linking, ActivityIndicator, Alert, ToastAndroid } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet, Dimensions, TouchableOpacity, ActivityIndicator, Alert, ToastAndroid } from 'react-native';
 import {
-    Avatar,
-    Title,
-    Caption,
     Text,
-    TouchableRipple,
-
-
 } from 'react-native-paper';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/Feather';
@@ -19,7 +13,6 @@ import * as Animatable from 'react-native-animatable';
 import { Animations } from '../constants/Animations';
 import axios from 'axios';
 import { BASE_URL } from '../utils/config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
 import LinearGradient from 'react-native-linear-gradient';
 import { convertDate } from '../utils/date';

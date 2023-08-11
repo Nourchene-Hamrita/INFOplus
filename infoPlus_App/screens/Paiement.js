@@ -129,159 +129,162 @@ const Paiement = ({ navigation }) => {
                     <Text style={{ color: "#fff", marginLeft: 20, fontSize: 16 }}>{userInfo.details.email}</Text>
                 </View>
             </View>
-            <Animatable.View  animation="fadeInUpBig" style={{
-                flex: 1,
-                backgroundColor: '#fff',
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
-                paddingHorizontal: 30,
-            }}>
-                <View style={styles.infoBoxWrapper}>
-                    <View style={[styles.infoBox, {
-                        borderRightColor: '#dddddd',
-                        borderRightWidth: 1
-                    }]}>
-
-
-                        <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
-                        <Caption>{userInfo.details.level}</Caption>
-
-
-
-                    </View>
-                    <View style={styles.infoBox}>
-                        <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Date d'inscription</Title>
-                        <Caption>{convertDate(userInfo.details.createdAt)}</Caption>
-                    </View>
-                </View>
-                {loading ? (
+            {loading ? (
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={COLORS.primary} />
+                        <ActivityIndicator size="large" color={COLORS.white} />
                     </View>
                 ) : error ? (
                     <View style={styles.errorContainer}>
                         <Text style={styles.errorText}>{error}</Text>
                     </View>
-                ) : (<View>
-                    {Array.isArray(payments) && payments.length > 0 ? (
-                        payments.map((payment) => (
-                            <TouchableOpacity
-                                key={payment._id}
-                                style={{
-                                    marginVertical: SIZES.base,
-                                    width: SIZES.width / 1.2,
-
-                                }}
-
-                            >
-                                <View
-                                    style={{
-                                        height: 130,
-                                        borderTopLeftRadius: 20,
-                                        borderTopRightRadius: 20,
-                                        backgroundColor: COLORS.primary
-                                    }}
-                                >
-
-                                    <LinearGradient colors={['#345fb4', '#89cff0']}
-                                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                ) : (
+                    <Animatable.View  animation="fadeInUpBig" style={{
+                        flex: 1,
+                        backgroundColor: '#fff',
+                        borderTopLeftRadius: 30,
+                        borderTopRightRadius: 30,
+                        paddingHorizontal: 30,
+                    }}>
+                        <View style={styles.infoBoxWrapper}>
+                            <View style={[styles.infoBox, {
+                                borderRightColor: '#dddddd',
+                                borderRightWidth: 1
+                            }]}>
+        
+        
+                                <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Classe</Title>
+                                <Caption>{userInfo.details.level}</Caption>
+        
+        
+        
+                            </View>
+                            <View style={styles.infoBox}>
+                                <Title style={{ ...FONTS.body1, color: COLORS.primary }}>Date d'inscription</Title>
+                                <Caption>{convertDate(userInfo.details.createdAt)}</Caption>
+                            </View>
+                        </View>
+                     <View>
+                            {Array.isArray(payments) && payments.length > 0 ? (
+                                payments.map((payment) => (
+                                    <TouchableOpacity
+                                        key={payment._id}
                                         style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            borderTopLeftRadius: 20,
-                                            borderTopRightRadius: 20,
-                                            padding: SIZES.padding,
-
-
-                                        }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
-                                            <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Payé </Text>
-                                            <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.montant} </Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
-                                            <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Restant </Text>
-                                            <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix - payment.montant} </Text>
-                                        </View>
-
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
-                                            <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de Paiement</Text>
-                                            <Text style={{ ...FONTS.h4, color: COLORS.white }}>{convertDate(payment.updatedAt)} </Text>
-                                        </View>
-                                        <View style={{ height: 1, backgroundColor: COLORS.white }}></View>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
-                                            <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Total </Text>
-                                            <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix} </Text>
-                                        </View>
-
-
-                                    </LinearGradient>
-
-                                    <View
-                                        style={{ // Render a placeholder view if eventPicture is null
-                                            width: "100%",
-                                            height: "100%",
-                                            borderTopLeftRadius: 20,
-                                            borderTopRightRadius: 20,
-                                            backgroundColor: COLORS.lightGray
+                                            marginVertical: SIZES.base,
+                                            width: SIZES.width / 1.2,
+        
                                         }}
-                                    />
-
-                                </View>
-
-                                <View
-                                    style={{
-                                        padding: SIZES.padding,
-                                        backgroundColor: COLORS.lightGray,
-                                        borderBottomLeftRadius: 20,
-                                        borderBottomRightRadius: 20,
-                                        shadowColor: COLORS.primary,
-                                        shadowOffset: {
-                                            width: 0,
-                                            height: 10,
-                                        },
-                                        shadowOpacity: 0.25,
-                                        shadowRadius: 3.84,
-                                        elevation: 5
-                                    }}
-                                >
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={{ ...FONTS.h4, color: COLORS.black }} numberOfLines={1}>Formation</Text>
-                                        {payment.formation.prix === payment.montant ?
-                                            <Animatable.View
-                                                animation="bounceIn"
-                                            >
-                                                <Feather
-                                                    name="check-circle"
-                                                    color="green"
-                                                    size={23}
-                                                />
-                                            </Animatable.View>
-                                            : <Animatable.View
-                                                animation="bounceIn"
-                                            >
-                                                <Feather
-                                                    name="x-circle"
-                                                    color="red"
-                                                    size={23}
-                                                />
-                                            </Animatable.View>}
-                                    </View>
-                                    <Text style={{ ...FONTS.body4, color: COLORS.black }} numberOfLines={2}>{payment.formation.nom}</Text>
-
-
-                                </View>
-                            </TouchableOpacity>
-                        ))
-                    ) : (
-                        <Text style={{ ...FONTS.body3, color: COLORS.black }}>No payment data available.</Text>
-                    )}
-
-                </View>)}
-
-
-
-
-            </Animatable.View>
+        
+                                    >
+                                        <View
+                                            style={{
+                                                height: 130,
+                                                borderTopLeftRadius: 20,
+                                                borderTopRightRadius: 20,
+                                                backgroundColor: COLORS.primary
+                                            }}
+                                        >
+        
+                                            <LinearGradient colors={['#345fb4', '#89cff0']}
+                                                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                                                style={{
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderTopLeftRadius: 20,
+                                                    borderTopRightRadius: 20,
+                                                    padding: SIZES.padding,
+        
+        
+                                                }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                                    <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Payé </Text>
+                                                    <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.montant} </Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                                    <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Restant </Text>
+                                                    <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix - payment.montant} </Text>
+                                                </View>
+        
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                                    <Text style={{ ...FONTS.h5, color: COLORS.white }}>Date de Paiement</Text>
+                                                    <Text style={{ ...FONTS.h4, color: COLORS.white }}>{convertDate(payment.updatedAt)} </Text>
+                                                </View>
+                                                <View style={{ height: 1, backgroundColor: COLORS.white }}></View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
+                                                    <Text style={{ ...FONTS.h5, color: COLORS.white }}>Montant Total </Text>
+                                                    <Text style={{ ...FONTS.h4, color: COLORS.white }}>{payment.formation.prix} </Text>
+                                                </View>
+        
+        
+                                            </LinearGradient>
+        
+                                            <View
+                                                style={{ // Render a placeholder view if eventPicture is null
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderTopLeftRadius: 20,
+                                                    borderTopRightRadius: 20,
+                                                    backgroundColor: COLORS.lightGray
+                                                }}
+                                            />
+        
+                                        </View>
+        
+                                        <View
+                                            style={{
+                                                padding: SIZES.padding,
+                                                backgroundColor: COLORS.lightGray,
+                                                borderBottomLeftRadius: 20,
+                                                borderBottomRightRadius: 20,
+                                                shadowColor: COLORS.primary,
+                                                shadowOffset: {
+                                                    width: 0,
+                                                    height: 10,
+                                                },
+                                                shadowOpacity: 0.25,
+                                                shadowRadius: 3.84,
+                                                elevation: 5
+                                            }}
+                                        >
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <Text style={{ ...FONTS.h4, color: COLORS.black }} numberOfLines={1}>Formation</Text>
+                                                {payment.formation.prix === payment.montant ?
+                                                    <Animatable.View
+                                                        animation="bounceIn"
+                                                    >
+                                                        <Feather
+                                                            name="check-circle"
+                                                            color="green"
+                                                            size={23}
+                                                        />
+                                                    </Animatable.View>
+                                                    : <Animatable.View
+                                                        animation="bounceIn"
+                                                    >
+                                                        <Feather
+                                                            name="x-circle"
+                                                            color="red"
+                                                            size={23}
+                                                        />
+                                                    </Animatable.View>}
+                                            </View>
+                                            <Text style={{ ...FONTS.body4, color: COLORS.black }} numberOfLines={2}>{payment.formation.nom}</Text>
+        
+        
+                                        </View>
+                                    </TouchableOpacity>
+                                ))
+                            ) : (
+                                <Text style={{ ...FONTS.body3, color: COLORS.black }}>No payment data available.</Text>
+                            )}
+        
+                        </View>
+        
+        
+        
+        
+                    </Animatable.View>
+                )}
+          
         </ScrollView>
     );
 };

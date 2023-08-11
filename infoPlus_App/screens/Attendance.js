@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-animatable';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { COLORS, FONTS, SIZES } from '../constants';
@@ -28,6 +28,26 @@ const Attendance = ({ navigation }) => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const ListEmptyComponent = () => {
+        const anim = {
+            0: { translateY: 0 },
+            0.5: { translateY: 50 },
+            1: { translateY: 0 },
+        }
+        return (
+            <Animatable.View style={[styles.listEmpty]}>
+                <Animatable.Text
+                    animation={anim}
+                    easing="ease-in-out"
+                    duration={3000}
+                    style={{ fontSize: 24 }}
+                    iterationCount="infinite">
+                    Liste Vide !
+                </Animatable.Text>
+            </Animatable.View>
+        )
+    }
 
     useEffect(() => {
         const fetchAttendanceSummary = async () => {
@@ -72,7 +92,7 @@ const Attendance = ({ navigation }) => {
         fetchAttendanceRecords();
     }, []);
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
             <View
                 style={{
@@ -188,19 +208,19 @@ const Attendance = ({ navigation }) => {
                     </View>
                 )}
             </View>
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={COLORS.white} />
+                </View>
+            ) : error ? (
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : (
+                <View animation="fadeInUpBig" style={styles.footer}>
 
-            <ScrollView animation="fadeInUpBig" style={styles.footer}>
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={COLORS.primary} />
-                    </View>
-                ) : error ? (
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
-                    </View>
-                ) : (
-                    /* Display attendance records */
-                    attendanceRecords.length > 0 ? (
+
+                    {attendanceRecords.length > 0 ? (
                         <>
                             {attendanceRecords.map((record, index) => (
                                 <View key={index} style={{
@@ -303,15 +323,22 @@ const Attendance = ({ navigation }) => {
                                 </View>
                             ))}
                         </>
-                    ) : (
-                        <Text>No attendance records found</Text>
-                    )
-                )}
-
-            </ScrollView>
+                    ) :
+                        (<>
+                            {ListEmptyComponent()}
+                        </>
 
 
-        </View>
+                        )
+                    }
+
+
+                </View>
+            )}
+
+
+
+        </ScrollView>
     );
 }
 
@@ -328,7 +355,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 30,
         paddingVertical: 5,
         paddingHorizontal: 20,
-        
+
     },
     loadingContainer: {
         flex: 1,
@@ -382,6 +409,11 @@ const styles = StyleSheet.create({
     textSign: {
         fontSize: 18,
         fontWeight: 'bold',
-    }
+    },
+    listEmpty: {
+        height: Dimensions.get('window').height/2,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
 export default Attendance;
