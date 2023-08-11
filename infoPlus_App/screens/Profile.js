@@ -37,7 +37,7 @@ const Profile = ({ navigation }) => {
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: COLORS.primary,
@@ -45,7 +45,7 @@ const Profile = ({ navigation }) => {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center' }}>
+                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
                     <Text style={{
                         color: COLORS.white,
                         fontSize: 20,

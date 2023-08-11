@@ -11,6 +11,7 @@ import emailRoutes from './routes/emailRoutes.js';
 import reclamationRoutes from './routes/reclamation.js';
 import paymentRoutes from './routes/paiement.js';
 import resultRoutes from './routes/result.js';
+import assignmentRoutes from './routes/assignments.js';
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -42,14 +43,15 @@ app.use(express.json());
 
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
-app.use("/api/interns",internsRoutes);
+app.use("/api/interns", internsRoutes);
 app.use("/api/events", eventsRoutes);
-app.use("/api/timetables",timetableRoutes);
-app.use("/api/formations",formationRoutes);
-app.use("/api/email",emailRoutes);
-app.use("/api/reclamations",reclamationRoutes);
-app.use("/api/payments",paymentRoutes);
-app.use("/api/results",resultRoutes);
+app.use("/api/timetables", timetableRoutes);
+app.use("/api/formations", formationRoutes);
+app.use("/api/email", emailRoutes);
+app.use("/api/reclamations", reclamationRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/results", resultRoutes);
+app.use("/api/assignments", assignmentRoutes);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

@@ -20,6 +20,7 @@ import AssignmentDetail from '../screens/Assignments/AssignmentDetail';
 import Announcement from '../screens/Announcement';
 import Search from '../screens/Search';
 
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const TabBarCustomButton = ({ accessibilityLabel, accessibilityState, children, onPress }) => {
@@ -155,6 +156,7 @@ const HomeStack = () => {
                 component={ReclamationList}
                 options={{ headerShown: false }}
             />
+           
         </Stack.Navigator>
     );
 };

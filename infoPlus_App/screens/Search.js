@@ -173,7 +173,7 @@ const Search = ({ navigation }) => {
                     duration={3000}
                     style={{ fontSize: 24 }}
                     iterationCount="infinite">
-                    Liste vide !
+                    Liste Vide !
                 </Animatable.Text>
             </Animatable.View>
         )
@@ -233,7 +233,7 @@ const Search = ({ navigation }) => {
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: COLORS.primary,
@@ -251,7 +251,7 @@ const Search = ({ navigation }) => {
                             paddingLeft: 10,
                             paddingRight: 40,
                             color: COLORS.white,
-                            marginRight: 30,
+                            marginRight: 45,
                             backgroundColor: 'transparent',
                         }}
                         placeholderTextColor={COLORS.white}

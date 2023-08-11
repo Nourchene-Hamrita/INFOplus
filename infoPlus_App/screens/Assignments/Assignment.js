@@ -155,16 +155,16 @@ const Assignment = ({ navigation }) => {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingTop:16,
+                    paddingTop: 16,
                     paddingLeft: 16,
-                    marginBottom:5
+                    marginBottom: 5
                 }}
             >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: COLORS.primary,
@@ -172,7 +172,7 @@ const Assignment = ({ navigation }) => {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
+                <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
                     <Text style={{
                         color: COLORS.white,
                         fontSize: 20,

@@ -266,7 +266,7 @@ export const createAssignment = asyncHandler(async (req, res) => {
 
         // Generate attachment URL based on your URL generation logic using the assignment's _id
         if (addedAssignment.attachmentOriginalName && addedAssignment.attachment) {
-            addedAssignment.attachmentUrl = `${BASE_URL}/assignments/${formationId}/${className}/${addedAssignment._id}/attachment`;
+            addedAssignment.attachmentUrl = `${BASE_URL}assignments/${formationId}/classes/${className}/assignments/${addedAssignment._id}/attachment`;
         }
 
         await formation.save();

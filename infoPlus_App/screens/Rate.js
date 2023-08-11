@@ -145,18 +145,20 @@ const Rate = ({ navigation }) => {
                         <Entypo
                             name="chevron-left"
                             style={{
-                                fontSize: 18,
+                                fontSize: 25,
                                 color: COLORS.white,
                                 padding: 12,
-                                backgroundColor: 'transparent',
+                                backgroundColor: COLORS.primary,
                                 borderRadius: 10,
                             }}
                         />
                     </TouchableOpacity>
-                    <View style={{ flex: 1, alignItems: 'center',marginRight:20}}>
+                    <View style={{ flex: 1, alignItems: 'center',marginRight:20  }}>
                         <Text style={{
-                            color: COLORS.white, fontSize: 20,
-                            fontWeight: '600', marginTop: 7
+                            color: COLORS.white,
+                            fontSize: 20,
+                            fontWeight: '600',
+                            paddingRight: 30
                         }}>FeedBack</Text>
                     </View>
 
@@ -259,12 +261,12 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primary
     },
     header: {
-        height: 70,
         width: '100%',
-        alignItems: 'flex-start', // Align header contents to the left (start)
-        paddingHorizontal: 10,
         flexDirection: 'row',
-        paddingTop: 20,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: 16,
+        paddingLeft: 16,
     },
     centeredTextContainer: {
         alignItems: 'center',

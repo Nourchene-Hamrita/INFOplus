@@ -21,6 +21,7 @@ import {
   getAssignmentById,
 } from "../controllers/formation.js"
 import { protect, verifyToken } from "../utils/verifyToken.js";
+import { Formation } from "../models/Formation.js";
 
 // Routes pour les formations
 router.get("/getAll", getAllFormations);
@@ -42,9 +43,13 @@ router.put(
   updateClass
 );
 router.post("/:formationId/classes/:className/announcements", protect, createAnnouncement);
+
 router.get("/:formationId/classes/:className/assignments", getClassAssignments);
 router.get("/:formationId/classes/:className/:assignmentId", getAssignmentById);
 router.get("/:formationId/class/:className/announcements", getClassAnnouncements);
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
 
+
 export default router;
+
+

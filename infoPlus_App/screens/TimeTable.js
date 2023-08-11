@@ -125,7 +125,7 @@ const TimeTable = ({ navigation }) => {
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: COLORS.primary,

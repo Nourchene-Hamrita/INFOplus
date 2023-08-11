@@ -107,7 +107,7 @@ export default function Announcement({ route, navigation }) {
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: 'transparent',
@@ -118,7 +118,7 @@ export default function Announcement({ route, navigation }) {
                 <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
                     <Text style={{
                         color: COLORS.white, fontSize: 20,
-                        fontWeight: '600', marginTop: 7
+                        fontWeight: '600', marginTop: 10
                     }}>Annonces</Text>
                 </View>
 

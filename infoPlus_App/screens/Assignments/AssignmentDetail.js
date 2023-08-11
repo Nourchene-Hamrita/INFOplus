@@ -11,7 +11,7 @@ import {
     Animated,
     ToastAndroid,
     ActivityIndicator,
-    StyleSheet, Linking
+    StyleSheet, Linking, Alert
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,10 +23,27 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { formatDate } from '../../utils/date';
 import * as Animatable from 'react-native-animatable';
 
-const openFile = (attachmentUrl) => {
-    // Open the PDF in a full-screen viewer using Linking
-    Linking.openURL(attachmentUrl);
+const openFile = (attachmentUrl, attachmentOriginalName) => {
+    // Show an alert to confirm downloading the file
+    Alert.alert(
+        'Télécharger le Fichier',
+        `Voulez-vous télécharger "${attachmentOriginalName}"?`,
+        [
+            {
+                text: 'Annuler',
+                style: 'cancel',
+            },
+            {
+                text: 'Télécharger',
+                onPress: () => {
+                    // Open the URL to download the file
+                    Linking.openURL(attachmentUrl);
+                },
+            },
+        ]
+    );
 };
+
 const AssignmentDetail = ({ navigation }) => {
     const width = Dimensions.get('window').width;
     const scrollX = new Animated.Value(0);
@@ -82,14 +99,14 @@ const AssignmentDetail = ({ navigation }) => {
                     alignItems: 'center',
                     paddingTop: 16,
                     paddingLeft: 16,
-                    marginBottom:5
+                    marginBottom: 5
                 }}
             >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: COLORS.primary,
@@ -97,7 +114,7 @@ const AssignmentDetail = ({ navigation }) => {
                         }}
                     />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center',marginRight:20 }}>
+                <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
                     <Text style={{
                         color: COLORS.white,
                         fontSize: 20,
@@ -155,17 +172,20 @@ const AssignmentDetail = ({ navigation }) => {
                         }}>
                         {assignmentDetails.title}
                     </Text>
-                    <Ionicons
-                        onPress={() => openFile(assignmentDetails.attachmentUrl)}
-                        name="link-outline"
-                        style={{
-                            fontSize: 24,
-                            color: COLORS.primary,
-                            backgroundColor: COLORS.primary + 10,
-                            padding: 8,
-                            borderRadius: 100,
-                        }}
-                    />
+                    <TouchableOpacity onPress={() => openFile(assignmentDetails.attachmentUrl, assignmentDetails.attachmentOriginalName)}>
+                        <Ionicons
+
+                            name="link-outline"
+                            style={{
+                                fontSize: 24,
+                                color: COLORS.primary,
+                                backgroundColor: COLORS.primary + 10,
+                                padding: 8,
+                                borderRadius: 100,
+                            }}
+                        />
+                    </TouchableOpacity>
+
                 </View>
 
                 <Text
@@ -196,20 +216,22 @@ const AssignmentDetail = ({ navigation }) => {
                     }}>
                     {assignmentDetails.description}
                 </Text>
-                <Text
-                    onPress={() => openFile(assignmentDetails.attachmentUrl)}
-                    style={{
-                        fontSize: 12,
-                        color: COLORS.red,
-                        fontWeight: '400',
-                        letterSpacing: 1,
-                        lineHeight: 20,
-                        maxWidth: '85%',
-                        maxHeight: 44,
-                        marginBottom: 18,
-                    }}>
-                    {assignmentDetails.attachmentOriginalName}
-                </Text>
+                <TouchableOpacity onPress={() => openFile(assignmentDetails.attachmentUrl, assignmentDetails.attachmentOriginalName)}>
+                    <Text
+                        style={{
+                            fontSize: 12,
+                            color: COLORS.red,
+                            fontWeight: '400',
+                            letterSpacing: 1,
+                            lineHeight: 20,
+                            maxWidth: '85%',
+                            maxHeight: 44,
+                            marginBottom: 18,
+                        }}>
+                        {assignmentDetails.attachmentOriginalName}
+                    </Text>
+                </TouchableOpacity>
+
                 <View
                     style={{
                         flexDirection: 'column',
@@ -329,7 +351,7 @@ const AssignmentDetail = ({ navigation }) => {
                             Le devoir a expiré
                         </Text>
                     ) : (
-                        <Text  style={{
+                        <Text style={{
                             fontSize: 18,
                             fontWeight: '500',
                             maxWidth: '85%',
