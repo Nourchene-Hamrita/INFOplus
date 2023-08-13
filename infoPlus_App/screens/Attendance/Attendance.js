@@ -3,14 +3,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-animatable';
 import CircularProgress from 'react-native-circular-progress-indicator';
-import { COLORS, FONTS, SIZES } from '../constants';
+import { COLORS, FONTS, SIZES } from '../../constants';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { BASE_URL } from '../utils/config';
-import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../../utils/config';
+import { AuthContext } from '../../context/AuthContext';
 import { ActivityIndicator } from 'react-native-paper';
-import { formatDate } from '../utils/date';
+import { formatDate } from '../../utils/date';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 

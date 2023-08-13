@@ -124,7 +124,7 @@ export default function ViewAll({ route, navigation }) {
                     <Entypo
                         name="chevron-left"
                         style={{
-                            fontSize: 18,
+                            fontSize: 25,
                             color: COLORS.white,
                             padding: 12,
                             backgroundColor: COLORS.primary,
@@ -149,21 +149,21 @@ export default function ViewAll({ route, navigation }) {
                 paddingVertical: 60,
                 paddingHorizontal: 3,
             }} animation="fadeInUpBig">
-            <Animatable.View
-                ref={viewRef}
-                easing={'ease-in-out'}
-                duration={500}
-            >
-                <FlatList
-                    data={data}
-                    keyExtractor={(_, i) => String(i)}
-                    numColumns={2}
-                    renderItem={renderItem}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 100 }}
-                    ListEmptyComponent={ListEmptyComponent}
-                />
-            </Animatable.View>
+                <Animatable.View
+                    ref={viewRef}
+                    easing={'ease-in-out'}
+                    duration={500}
+                >
+                    <FlatList
+                        data={data}
+                        keyExtractor={(_, i) => String(i)}
+                        numColumns={2}
+                        renderItem={renderItem}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: 100 }}
+                        ListEmptyComponent={ListEmptyComponent}
+                    />
+                </Animatable.View>
             </Animatable.View>
         </View>
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
     StyleSheet,
     SafeAreaView,
@@ -14,13 +14,34 @@ import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/config';
 import * as Animatable from 'react-native-animatable';
 import { StatusBar } from 'expo-status-bar';
+import io from 'socket.io-client';
+
+
 
 const Home = ({ navigation }) => {
+    const [notifications, setNotifications] = useState([]);
     const { userInfo } = useContext(AuthContext);
-    const { data, loading, error } = useFetch(
-        `${BASE_URL}/events`
-    );
+    const { data, loading, error } = useFetch
+        (
+            `${BASE_URL}/events`
+        );
     console.log(data)
+
+
+    useEffect(() => {
+        const socket = io("http://192.168.1.17:8800");
+
+        socket.on('getNotification', notification => {
+            console.log('Received notification:', notification);
+            setNotifications(prevNotifications => [...prevNotifications, notification]);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+
     const featuresData = [
         {
             id: 1,
@@ -85,8 +106,11 @@ const Home = ({ navigation }) => {
     const handleFeaturePress = (item) => {
         switch (item.id) {
             case 1:
-
-                navigation.navigate('Attendance');
+                if (userInfo.role === 'teacher') {
+                    navigation.navigate('AttendanceList'); // Navigate to AttendanceList for teachers
+                } else {
+                    navigation.navigate('Attendance'); // Navigate to default Attendance screen
+                }
                 break;
             case 2:
 
@@ -429,6 +453,9 @@ const Home = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
             {/* <StatusBar backgroundColor={COLORS.white} barStyle="light-content" /> */}
+            {notifications.map((notification, index) => (
+                <Text key={index}>{notification.senderName} sent a {notification.type} notification</Text>
+            ))}
             {renderPromos()}
         </SafeAreaView>
     );

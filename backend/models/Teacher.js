@@ -22,7 +22,7 @@ const TeacherSchema = new mongoose.Schema(
                 classId: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Formation.classes", // Reference to Formation's classes
-                    required: true,
+
                 },
                 subjects: [{ type: String }], // Subjects taught by the teacher in this class
             },

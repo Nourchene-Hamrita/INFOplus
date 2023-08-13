@@ -19,9 +19,11 @@ import {
   createClass,
   updateClass,
   getAssignmentById,
+  getInternsAttendanceSummary
 } from "../controllers/formation.js"
 import { protect, verifyToken } from "../utils/verifyToken.js";
 import { Formation } from "../models/Formation.js";
+
 
 // Routes pour les formations
 router.get("/getAll", getAllFormations);
@@ -47,7 +49,11 @@ router.post("/:formationId/classes/:className/announcements", protect, createAnn
 router.get("/:formationId/classes/:className/assignments", getClassAssignments);
 router.get("/:formationId/classes/:className/:assignmentId", getAssignmentById);
 router.get("/:formationId/class/:className/announcements", getClassAnnouncements);
+
+
+
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
+router.get('/:formationId/:classId/attendance-summary', getInternsAttendanceSummary);
 
 
 export default router;

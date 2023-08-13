@@ -1,6 +1,8 @@
 import { Formation, FormationAcceleree, FormationDiplomante } from "../models/Formation.js";
 import asyncHandler from 'express-async-handler';
 import { Intern } from "../models/Intern.js";
+import { Teacher } from "../models/Teacher.js";
+import { getUser } from "../index.js";
 const BASE_URL = "http://192.168.137.1:8800/api"
 
 // Obtenir tous les formation
@@ -175,14 +177,27 @@ export const createClass = asyncHandler(async (req, res) => {
         };
 
         formation.classes.push(newClass);
-
         await formation.save();
+
+        // Get the newly created class
+        const createdClass = formation.classes.find((cls) => cls.name === name);
+
+        // Update the teacher's assignedClasses array with the new class information
+        const teacher = await Teacher.findOne({ user: req.user._id });
+        if (teacher) {
+            teacher.assignedClasses.push({
+                classId: createdClass._id, // Use the created class's _id
+                subjects: subjects || [], // Add subjects if available
+            });
+            await teacher.save();
+        }
 
         res.status(201).json(formation);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+
 //update a class 
 export const updateClass = asyncHandler(async (req, res) => {
     const { formationId, className } = req.params;
@@ -203,10 +218,33 @@ export const updateClass = asyncHandler(async (req, res) => {
             return;
         }
 
+        // Store the original teacher ID and subjects
+        const originalTeacherId = classInfo.teacher;
+        const originalSubjects = classInfo.subjects || [];
+
         // Update the class fields based on the provided updateFields
         Object.assign(classInfo, req.body);
 
         await formation.save();
+
+        // If the teacher or subjects are updated, also update the corresponding teacher model
+        if (classInfo.teacher.toString() !== originalTeacherId.toString() ||
+            JSON.stringify(classInfo.subjects) !== JSON.stringify(originalSubjects)) {
+            const teacher = await Teacher.findOne({ user: originalTeacherId });
+
+            if (teacher) {
+                // Find the assigned class information and update it
+                const assignedClass = teacher.assignedClasses.find(
+                    cls => cls.classId.toString() === classInfo._id.toString()
+                );
+
+                if (assignedClass) {
+                    assignedClass.subjects = classInfo.subjects || [];
+                }
+
+                await teacher.save();
+            }
+        }
 
         res.status(200).json(formation);
     } catch (error) {
@@ -221,7 +259,10 @@ export const updateClass = asyncHandler(async (req, res) => {
 
 
 // Create Assignment for a Class
+// Import necessary modules and dependencies
+
 export const createAssignment = asyncHandler(async (req, res) => {
+    const io = req.app.get('io'); // Get the io instance from app settings
     const { formationId, className } = req.params;
     const { title, description, dueDate, subject } = req.body;
 
@@ -263,19 +304,43 @@ export const createAssignment = asyncHandler(async (req, res) => {
         // Get the assignment that was just added to the array
         const addedAssignment = classInfo.assignments[classInfo.assignments.length - 1];
 
-
         // Generate attachment URL based on your URL generation logic using the assignment's _id
         if (addedAssignment.attachmentOriginalName && addedAssignment.attachment) {
             addedAssignment.attachmentUrl = `${BASE_URL}assignments/${formationId}/classes/${className}/assignments/${addedAssignment._id}/attachment`;
+            // Remove the attachment field from the assignment object
+            delete addedAssignment.attachment;
         }
 
         await formation.save();
 
+        // Notify associated interns about the new assignment
+        const classIds = [formation._id]; // Formation ID as an array
+        const interns = await Intern.find({
+            "formations.formation": { $in: classIds },
+        });
+
+        const teacher = await Teacher.findOne({ user: req.user._id }); // Get the teacher
+        if (teacher) {
+            interns.forEach((intern) => {
+                const receiver = getUser(intern.user.username);
+                if (receiver) {
+                    console.log(`Sending notification to ${receiver.username}`);
+                    io.to(receiver.socketId).emit("getNotification", {
+                        senderName: teacher.user.username,
+                        type: "assignment",
+                    });
+                }
+            });
+        }
+
+        console.log("Assignment created successfully and notifications sent.");
         res.status(201).json(formation);
     } catch (error) {
+        console.error("Error creating assignment:", error);
         res.status(400).json({ message: error.message });
     }
 });
+
 
 
 // Create Announcement for a Class
@@ -540,4 +605,67 @@ export const getStudentLevelContent = asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+export const getInternsAttendanceSummary = async (req, res) => {
+    const { formationId, classId } = req.params;
+
+    try {
+        // Find the formation and populate its classes and class's teacher
+        const formation = await Formation.findById(formationId)
+            .populate({
+                path: 'classes',
+                populate: {
+                    path: 'teacher',
+                    select: 'name', // Assuming 'name' is the field representing teacher's name
+                },
+            });
+
+        if (!formation) {
+            return res.status(404).json({ success: false, message: 'Formation not found' });
+        }
+
+        // Find the class within the formation's classes array
+        const selectedClass = formation.classes.find(cls => cls._id.toString() === classId.toString());
+
+        if (!selectedClass) {
+            return res.status(404).json({ success: false, message: 'Class not found in formation' });
+        }
+
+        // Get attendance summary for each intern in the class
+        const internSummaries = [];
+        for (const internObj of selectedClass.interns) {
+            const intern = await Intern.findOne({ user: internObj.intern });
+
+            if (!intern) {
+                // Skip interns not found
+                continue;
+            }
+
+            const attendanceData = intern.formations.find(formationObj => formationObj.formation.toString() === formationId)
+                .attendance;
+
+            const daysPresent = attendanceData.filter(att => att.isPresent && selectedClass.subjects.includes(att.subject)).length;
+            const totalDays = attendanceData.length;
+            const attendancePercentage = totalDays === 0 ? 0 : (daysPresent / totalDays) * 100;
+
+            const internSummary = {
+                internId: intern.user,
+                formationId: formationId,
+                formationName: formation.nom, // Adding the formation name
+                classId: classId,
+                className: selectedClass.name, // Adding the class name
+                subject: selectedClass.subjects,
+                totalDays: totalDays,
+                daysPresent: daysPresent,
+                attendancePercentage: attendancePercentage,
+            };
+
+            internSummaries.push(internSummary);
+        }
+
+        return res.status(200).json({ success: true, internSummaries });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
 

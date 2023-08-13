@@ -12,13 +12,14 @@ import Result from '../screens/Result';
 import Assignment from '../screens/Assignments/Assignment';
 import Paiement from '../screens/Paiement';
 import Rate from '../screens/Rate';
-import Attendance from '../screens/Attendance';
+import Attendance from '../screens/Attendance/Attendance';
 import Reclamation from '../screens/Reclamations/Reclamation';
 import ReclamationList from '../screens/Reclamations/ReclamationsList';
 import ViewAll from '../screens/Events/ViewAll';
 import AssignmentDetail from '../screens/Assignments/AssignmentDetail';
 import Announcement from '../screens/Announcement';
 import Search from '../screens/Search';
+import AttendanceList from '../screens/Attendance/AttendanceList';
 
 
 const Tab = createBottomTabNavigator();
@@ -114,6 +115,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="Attendance"
                 component={Attendance}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="AttendanceList"
+                component={AttendanceList}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

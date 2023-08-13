@@ -78,7 +78,7 @@ const TimeTable = ({ navigation }) => {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size='large' color={COLORS.white} />
-                
+
             </View>
         );
     }
@@ -95,9 +95,9 @@ const TimeTable = ({ navigation }) => {
                         animation={anim}
                         easing="ease-in-out"
                         duration={3000}
-                        style={{ fontSize: 24 }}
+                        style={{ fontSize: 20 }}
                         iterationCount="infinite">
-                        No timetables available !
+                        Aucun Emlpoi du temps disponible !
                     </Animatable.Text>
                 </View>
             )
@@ -118,7 +118,7 @@ const TimeTable = ({ navigation }) => {
                     alignItems: 'center',
                     paddingTop: 16,
                     paddingLeft: 16,
-                    marginBottom:5
+                    marginBottom: 5
                 }}
             >
                 <TouchableOpacity onPress={() => navigation.goBack('Home')}>

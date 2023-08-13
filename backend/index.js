@@ -13,6 +13,8 @@ import paymentRoutes from './routes/paiement.js';
 import resultRoutes from './routes/result.js';
 import assignmentRoutes from './routes/assignments.js';
 
+import http from "http";
+import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -20,6 +22,16 @@ const app = express();
 
 
 dotenv.config();
+
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:8081",
+    },
+});
+// Set up the io instance to be accessible throughout the application
+app.set('io', io);
+
 
 const connect = async () => {
     try {
@@ -33,6 +45,45 @@ const connect = async () => {
 mongoose.connection.on("disconnected", () => {
     console.log("mongoDB disconnected!");
 });
+
+let onlineUsers = [];
+
+const addNewUser = (username, socketId) => {
+    !onlineUsers.some((user) => user.username === username) &&
+        onlineUsers.push({ username, socketId });
+};
+
+const removeUser = (socketId) => {
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
+};
+
+ export const getUser = (username) => {
+    return onlineUsers.find((user) => user.username === username);
+};
+
+io.on("connection", (socket) => {
+    socket.on("newUser", (username) => {
+        addNewUser(username, socket.id);
+    });
+
+    // socket.on("sendNotification", async ({ senderName, receiverName, type }) => {
+    //     const receiver = getUser(receiverName);
+    //     if (receiver) {
+    //         // Save the notification to the database (if needed)
+    //         // This is where you can add your database integration logic
+
+    //         io.to(receiver.socketId).emit("getNotification", {
+    //             senderName,
+    //             type,
+    //         });
+    //     }
+    // });
+
+    socket.on("disconnect", () => {
+        removeUser(socket.id);
+    });
+});
+
 
 
 //middlewares
@@ -65,9 +116,10 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(8800, () => {
+// Start the server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
     connect();
-    console.log("Backend server is running...");
-
+    console.log(`Server is running on port ${PORT}`);
 });
 //icxgJydQ2dEKmaha

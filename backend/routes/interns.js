@@ -2,6 +2,7 @@ import express from "express";
 import {
     createAttendanceRecord,
     deleteAttendanceRecord,
+    getAllInternsAttendanceSummaryBySubject,
     getAllInternsOverallAttendanceSummary,
     getAttendanceRecordForDate,
     getAttendanceRecords,
@@ -27,7 +28,7 @@ router.get("/:internId/attendance", getAttendanceRecords);
 //GET ALL
 
 router.get("/:internId/attendance/date", getAttendanceRecordForDate);
-router.get("/attendance/summary", verifyAdmin, getAllInternsOverallAttendanceSummary);
+router.get("/attendance/summary", verifyToken, getAllInternsOverallAttendanceSummary);
 router.get("/:internId/attendance/summary", getOverallAttendanceSummary);
 router.get('/attendance/report', getAttendanceReport);
 

@@ -44,7 +44,7 @@ const ClassSchema = new mongoose.Schema({
     subjects: [{ type: String }],
     assignments: [AssignmentSchema],
     announcements: [AnnouncementSchema],
-    interns: [{ intern: { type: mongoose.Schema.Types.ObjectId, ref: 'Intern.user' } }],
+    interns: [{ intern: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }],
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to teacher
 });
 

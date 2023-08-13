@@ -213,16 +213,47 @@ export const getAllInternsOverallAttendanceSummary = async (req, res) => {
                             },
                         },
                     },
+                    formationIds: { $push: "$formations.formation" }, // Store the formation IDs
+                    classInfo: { $first: "$formations.formation.classes" } // Store the class information
+                },
+            },
+            {
+                $lookup: {
+                    from: "users", // Assuming the collection name for users is "users"
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "intern",
+                },
+            },
+            {
+                $unwind: "$intern", // Unwind the intern array
+            },
+            {
+                $lookup: {
+                    from: "formations", // Assuming the collection name for formations is "formations"
+                    let: { formationIds: "$formationIds" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $in: ["$_id", "$$formationIds"] }
+                            }
+                        }
+                    ],
+                    as: "formation",
                 },
             },
             {
                 $project: {
                     internId: "$_id",
-                    _id: 0,
+                    internName: { $concat: ["$intern.firstName", " ", "$intern.lastName"] }, // Combine first and last names
+                    daysPresent: 1,
+                    formationNames: "$formation.nom", // Extract the names of formations
                     daysAbsent: { $subtract: ["$totalDays", "$daysPresent"] },
                     attendancePercentage: {
                         $multiply: [{ $divide: ["$daysPresent", "$totalDays"] }, 100],
                     },
+                    className: "$classInfo.name", // Get the class name from the stored class information
+                    // You can add more fields from the class information as needed
                 },
             },
         ]);
@@ -234,6 +265,84 @@ export const getAllInternsOverallAttendanceSummary = async (req, res) => {
         return res.status(500).json({ success: false, message: "Error calculating overall attendance summary" });
     }
 };
+
+// export const getAllInternsOverallAttendanceSummary = async (req, res) => {
+//     try {
+//         console.log('Getting overall attendance summary...');
+//         const summaries = await Intern.aggregate([
+//             {
+//                 $unwind: "$formations", // Unwind the formations array
+//             },
+//             {
+//                 $group: {
+//                     _id: "$user", // Group by the user (intern) ID
+//                     totalDays: { $sum: { $size: "$formations.attendance" } }, // Calculate the total days for each intern
+//                     daysPresent: {
+//                         $sum: {
+//                             $size: {
+//                                 $filter: {
+//                                     input: "$formations.attendance",
+//                                     as: "record",
+//                                     cond: { $eq: ["$$record.isPresent", true] },
+//                                 },
+//                             },
+//                         },
+//                     },
+//                     formationIds: { $push: "$formations.formation" }, // Store the formation IDs
+//                     classInfo: { $first: "$formations.formation.classes" } // Store the class information
+//                 },
+//             },
+//             {
+//                 $lookup: {
+//                     from: "users", // Assuming the collection name for users is "users"
+//                     localField: "_id",
+//                     foreignField: "_id",
+//                     as: "intern",
+//                 },
+//             },
+//             {
+//                 $unwind: "$intern", // Unwind the intern array
+//             },
+//             {
+//                 $lookup: {
+//                     from: "formations", // Assuming the collection name for formations is "formations"
+//                     let: { formationIds: "$formationIds" },
+//                     pipeline: [
+//                         {
+//                             $match: {
+//                                 $expr: { $in: ["$_id", "$$formationIds"] }
+//                             }
+//                         }
+//                     ],
+//                     as: "formation",
+//                 },
+//             },
+//             {
+//                 $project: {
+//                     internId: "$_id",
+//                     internName: { $concat: ["$intern.firstName", " ", "$intern.lastName"] }, // Combine first and last names
+//                     daysPresent: 1,
+//                     formation: "$formation", // Use the entire formation array
+//                     daysAbsent: { $subtract: ["$totalDays", "$daysPresent"] },
+//                     attendancePercentage: {
+//                         $multiply: [{ $divide: ["$daysPresent", "$totalDays"] }, 100],
+//                     },
+//                     className: "$classInfo.name", // Get the class name from the stored class information
+//                     // You can add more fields from the class information as needed
+//                 },
+//             },
+//         ]);
+
+//         return res.json({ success: true, summaries });
+
+//     } catch (error) {
+//         console.error('Error calculating overall attendance summary:', error);
+//         return res.status(500).json({ success: false, message: "Error calculating overall attendance summary" });
+//     }
+// };
+
+
+
 
 
 export const deleteAttendanceRecord = async (req, res) => {
@@ -307,6 +416,68 @@ export const getAttendanceReport = async (req, res) => {
     } catch (error) {
         console.error('Error fetching attendance report:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Define the function to get attendance summary for all interns
+export const getAllInternsAttendanceSummaryBySubject = async (req, res) => {
+    try {
+        const { formationId, classId, subject } = req.params;
+
+        // Find all interns
+        const interns = await Intern.find();
+
+        // Process attendance summary for each intern
+        const summaries = interns.map((intern) => {
+            const formation = intern.formations.find((form) => form.formation.equals(formationId));
+            if (!formation) {
+                return {
+                    internId: intern.user.toString(),
+                    formationId: formationId,
+                    classId: classId,
+                    subject: subject,
+                    totalDays: 0,
+                    daysPresent: 0,
+                    daysAbsent: 0,
+                    attendancePercentage: 0,
+                };
+            }
+
+            const selectedClass = formation.formation.classes.find((cls) => cls._id.equals(classId));
+            if (!selectedClass || !selectedClass.subjects.includes(subject)) {
+                return {
+                    internId: intern.user.toString(),
+                    formationId: formationId,
+                    classId: classId,
+                    subject: subject,
+                    totalDays: 0,
+                    daysPresent: 0,
+                    daysAbsent: 0,
+                    attendancePercentage: 0,
+                };
+            }
+
+            const attendanceRecords = formation.attendance.filter((record) => record.subject === subject);
+            const totalDays = attendanceRecords.length;
+            const daysPresent = attendanceRecords.filter((record) => record.isPresent).length;
+            const daysAbsent = totalDays - daysPresent;
+            const attendancePercentage = totalDays > 0 ? (daysPresent / totalDays) * 100 : 0;
+
+            return {
+                internId: intern.user.toString(),
+                formationId: formationId,
+                classId: classId,
+                subject: subject,
+                totalDays,
+                daysPresent,
+                daysAbsent,
+                attendancePercentage,
+            };
+        });
+
+        return res.json({ success: true, summaries });
+    } catch (error) {
+        console.error('Error calculating attendance summaries:', error.message);
+        return res.status(500).json({ success: false, message: "Error calculating attendance summaries" });
     }
 };
 
