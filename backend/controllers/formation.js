@@ -30,6 +30,7 @@ export const getFormationById = async (req, res) => {
 };
 
 
+
 // Créer une nouvelle formation
 export const createFormation = async (req, res) => {
     try {
@@ -188,15 +189,29 @@ export const createClass = asyncHandler(async (req, res) => {
             teacher.assignedClasses.push({
                 classId: createdClass._id, // Use the created class's _id
                 subjects: subjects || [], // Add subjects if available
+                formationId: formationId, // Add the formation ID
             });
             await teacher.save();
         }
 
-        res.status(201).json(formation);
+        // Update the class's teacher with the teacher's ID
+        createdClass.teacher = req.user._id;
+        await formation.save();
+
+        // Exclude attachment field from the response
+        const formationResponse = formation.toObject();
+        formationResponse.classes.forEach(cls => {
+            delete cls.assignments;
+            delete cls.announcements;
+            // You can remove other fields as needed
+        });
+
+        res.status(201).json(formationResponse);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+
 
 //update a class 
 export const updateClass = asyncHandler(async (req, res) => {
@@ -634,7 +649,8 @@ export const getInternsAttendanceSummary = async (req, res) => {
         // Get attendance summary for each intern in the class
         const internSummaries = [];
         for (const internObj of selectedClass.interns) {
-            const intern = await Intern.findOne({ user: internObj.intern });
+            const intern = await Intern.findOne({ user: internObj.intern })
+                .populate('user', 'firstName lastName'); // Populate the user field with first name and last name
 
             if (!intern) {
                 // Skip interns not found
@@ -646,10 +662,13 @@ export const getInternsAttendanceSummary = async (req, res) => {
 
             const daysPresent = attendanceData.filter(att => att.isPresent && selectedClass.subjects.includes(att.subject)).length;
             const totalDays = attendanceData.length;
+            const daysAbsent = totalDays - daysPresent; // Calculate absent days
             const attendancePercentage = totalDays === 0 ? 0 : (daysPresent / totalDays) * 100;
 
             const internSummary = {
-                internId: intern.user,
+                internId: intern.user._id,
+                firstName: intern.user.firstName,
+                lastName: intern.user.lastName,
                 formationId: formationId,
                 formationName: formation.nom, // Adding the formation name
                 classId: classId,
@@ -657,6 +676,7 @@ export const getInternsAttendanceSummary = async (req, res) => {
                 subject: selectedClass.subjects,
                 totalDays: totalDays,
                 daysPresent: daysPresent,
+                daysAbsent: daysAbsent, // Add absent days to the summary
                 attendancePercentage: attendancePercentage,
             };
 

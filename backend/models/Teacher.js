@@ -19,6 +19,11 @@ const TeacherSchema = new mongoose.Schema(
         levels: [{ type: String }],
         assignedClasses: [
             {
+                formationId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Formation", // Reference to Formation's classes
+
+                },
                 classId: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Formation.classes", // Reference to Formation's classes

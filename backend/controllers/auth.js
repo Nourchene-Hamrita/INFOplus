@@ -145,6 +145,7 @@ export const login = async (req, res, next) => {
                 .populate({
                     path: "formations.formation", // Populate the nested formation field in the intern document
                     model: "Formation",
+                    select: "nom",
                 })
                 .exec();
 
@@ -160,8 +161,25 @@ export const login = async (req, res, next) => {
             // Fetch additional data for parent role
             // Add code to retrieve parent-specific data and append it to the details object
         } else if (user.role === 'teacher') {
-            const teacher = await Teacher.findOne({ user: user._id });
-            details = { ...details, salary: teacher.salary, specialty: teacher.specialty, profil: teacher.profil };
+            const teacher = await Teacher.findOne({ user: user._id }).exec();
+
+            details = {
+                ...details,
+                salary: teacher.salary,
+                specialty: teacher.specialty,
+                profil: teacher.profil,
+                assignedClasses: await Promise.all(teacher.assignedClasses.map(async item => {
+                    const formation = await Formation.findOne({ "classes._id": item.classId }).exec();
+                    const foundClass = formation.classes.find(cls => cls._id.toString() === item.classId.toString());
+                    return {
+                        classId: item.classId,
+                        formationId: formation._id, // Include the formationId
+                        subjects: item.subjects,
+                        className: foundClass.name, // Include the class name
+                        classLevel: foundClass.level, // Include the class level
+                    };
+                })),
+            };
         } else if (user.role === 'company') {
             const company = await Company.findOne({ user: user._id });
             details = { ...details, business_sector: company.business_sector, description: company.description };

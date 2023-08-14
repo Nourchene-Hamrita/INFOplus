@@ -53,7 +53,7 @@ router.get("/:formationId/class/:className/announcements", getClassAnnouncements
 
 
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
-router.get('/:formationId/:classId/attendance-summary', getInternsAttendanceSummary);
+router.get('/:formationId/:classId/attendance-summary',verifyToken, getInternsAttendanceSummary);
 
 
 export default router;
