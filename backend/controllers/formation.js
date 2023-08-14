@@ -212,6 +212,76 @@ export const createClass = asyncHandler(async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+// Get a Specific Class by ID
+export const getClassById = asyncHandler(async (req, res) => {
+    const { formationId, classId } = req.params;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        const classInfo = formation.classes.find((cls) => cls._id.toString() === classId);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found" });
+            return;
+        }
+
+        // Create a shallow copy of the classInfo object and remove the attachment field from assignments
+        const classWithoutAttachment = {
+            ...classInfo.toObject(),
+            assignments: classInfo.assignments.map(assignment => {
+                const { attachment, ...assignmentWithoutAttachment } = assignment.toObject();
+                return assignmentWithoutAttachment;
+            }),
+        };
+
+        res.status(200).json(classWithoutAttachment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+// Get Classes for a Specific Teacher
+export const getClassesByTeacher = asyncHandler(async (req, res) => {
+    const { teacherId } = req.params;
+
+    try {
+        const formations = await Formation.find();
+
+        if (!formations) {
+            res.status(404).json({ message: "No formations found" });
+            return;
+        }
+
+        const teacherClasses = [];
+
+        formations.forEach((formation) => {
+            formation.classes.forEach((classInfo) => {
+                if (classInfo.teacher.toString() === teacherId) {
+                    teacherClasses.push({
+                        formationId: formation._id,
+                        classId: classInfo._id,
+                        className: classInfo.name,
+                        level: classInfo.level,
+                        subjects: classInfo.subjects,
+                    });
+                }
+            });
+        });
+
+        res.status(200).json(teacherClasses);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 
 //update a class 
