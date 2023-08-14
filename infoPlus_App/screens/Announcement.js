@@ -10,8 +10,9 @@ import { BASE_URL } from '../utils/config';
 import { formatDate } from '../utils/date';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { create } from 'react-test-renderer';
-const AnnouncementItem = ({ item: { title, content, date, teacher, createdAt }, index, animation }) => {
+
+
+const AnnouncementItem = ({ item: { title, content, teacher, createdAt }, index, animation }) => {
     return (
         <Animatable.View animation={animation} duration={1000} delay={index * 300}>
             <TouchableOpacity style={styles.item}>
@@ -20,7 +21,7 @@ const AnnouncementItem = ({ item: { title, content, date, teacher, createdAt }, 
                 </View>
                 <View style={styles.details}>
                     <View style={styles.rowContainer}>
-                        <Text style={styles.name}>{teacher.firstName} {teacher.lastName}</Text>
+                        <Text style={styles.name}>{teacher.firstName} {teacher.lastName} </Text>
                         <Text >{formatDate(createdAt)}</Text>
                     </View>
                     <View style={{ flexDirection: 'column' }}>

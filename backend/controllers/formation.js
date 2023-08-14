@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { Intern } from "../models/Intern.js";
 import { Teacher } from "../models/Teacher.js";
 import { getUser } from "../index.js";
+import { User } from "../models/User.js";
 const BASE_URL = "http://192.168.137.1:8800/api"
 
 // Obtenir tous les formation
@@ -497,7 +498,6 @@ export const getClassAnnouncements = asyncHandler(async (req, res) => {
             return;
         }
 
-        // Find the class by name
         const classInfo = formation.classes.find(cls => cls.name === className);
 
         if (!classInfo) {
@@ -505,36 +505,31 @@ export const getClassAnnouncements = asyncHandler(async (req, res) => {
             return;
         }
 
-        // Retrieve announcement IDs
-        const announcementIds = classInfo.announcements.map(announcement => announcement._id);
+        // Populate teacher information before sending the response
+        await Formation.populate(classInfo, { path: 'announcements.teacher' });
 
-        // Populate teacher information for announcements
-        const populatedAnnouncements = await Formation.populate(classInfo, {
-            path: 'announcements',
-            select: 'title content teacher',
-            populate: {
-                path: 'teacher',
-                select: 'firstName lastName',
-            },
+        const filteredAnnouncements = classInfo.announcements.map(async ({ _id, title, content, teacher, createdAt }) => {
+            // Fetch the teacher's details from the database
+            const teacherDetails = await User.findById(teacher);
+
+            return {
+                _id,
+                title,
+                content,
+                createdAt,
+                teacher: teacherDetails ? `${teacherDetails.firstName} ${teacherDetails.lastName}` : null,
+            };
         });
 
-        // Construct the response
-        const announcements = populatedAnnouncements.announcements.map(announcement => ({
-            _id: announcement._id,
-            title: announcement.title,
-            content: announcement.content,
-            teacher: {
-                id: announcement.teacher._id,
-                firstName: announcement.teacher.firstName,
-                lastName: announcement.teacher.lastName
-            },
-        }));
+        // Wait for all teacher details to be fetched
+        const announcementsWithTeacher = await Promise.all(filteredAnnouncements);
 
-        res.status(200).json(announcements);
+        res.status(200).json(announcementsWithTeacher);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 // Get Assignments and Announcements for a Student's Level
 export const getStudentLevelContent = asyncHandler(async (req, res) => {
     const { internId } = req.params;

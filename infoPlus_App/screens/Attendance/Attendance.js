@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        paddingVertical: 5,
+        paddingVertical:50,
         paddingHorizontal: 20,
 
     },
