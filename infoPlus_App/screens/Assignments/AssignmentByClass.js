@@ -14,6 +14,7 @@ import { Animations } from '../../constants/Animations';
 import axios from 'axios';
 import { BASE_URL } from '../../utils/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
 
 const colorAr = [
@@ -43,101 +44,44 @@ const AssignmentItem = ({ item, index, animation, navigation }) => {
             <View style={styles.listItem}>
                 <TouchableOpacity
                     activeOpacity={0.7}
-                    onPress={() => navigation.navigate('AssignmentDetail',
-                        {
-                            formationId: item.formation.id,
-                            className: item.class.name,
-                            assignmentId: item._id
-                        })}>
-
+                >
                     <View style={[styles.image, { backgroundColor: bgColor(index) }]}>
                         <Text style={styles.subjectText}>{item.subject}</Text>
                     </View>
-
                 </TouchableOpacity>
                 <View style={styles.detailsContainer}>
                     <Text style={styles.fileText} numberOfLines={1}>{item.title}</Text>
-                    <Icon name="more-vertical" size={20} color={COLORS.black} onPress={() => navigation.navigate('AssignmentDetail', {
-                        formationId: item.formation.id,
-                        className: item.class.name,
-                        assignmentId: item._id
-                    })} />
-
+                    <Icon
+                        name="more-vertical"
+                        size={20}
+                        color={COLORS.black}
+                        onPress={() => navigation.navigate('AssignmentDetail', {
+                            formationId: item.formation.id,
+                            className: item.class.name,
+                            assignmentId: item._id
+                        })}
+                    />
                 </View>
-
-
             </View>
         </Animatable.View>
-    )
-};
-const ClassItem = ({ item, index, animation, navigation }) => {
-    return (
-        <Animatable.View
-            animation={animation}
-            duration={1000}
-            delay={index * 300}
-        >
-            <View style={styles.listItem}>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => navigation.navigate('AssignmentByClass',
-                        {
-                            formationId: item.formationId,
-                            classId: item.classId,
-                            
-                        })}>
-
-                    <View style={[styles.image, { backgroundColor: bgColor(index) }]}>
-                        <Text style={styles.subjectText}>{item.className}</Text>
-                    </View>
-
-                </TouchableOpacity>
-                <View style={styles.detailsContainer}>
-                    <Text style={styles.fileText} numberOfLines={1}>{item.level}</Text>
-                    <Icon name="more-vertical" size={20} color={COLORS.black} onPress={() => navigation.navigate('AssignmentDetail', {
-                        formationId: item.formation.id,
-                        className: item.class.name,
-                        assignmentId: item._id
-                    })} />
-
-                </View>
-
-
-            </View>
-        </Animatable.View>
-    )
+    );
 };
 
 
 
-const Assignment = ({ navigation }) => {
+
+const AssignmentByClass = ({ navigation }) => {
+    const route = useRoute();
+    const [assignments, setAssignments] = useState([]);
+    const [loading, setLoading] = useState(true);
     const viewRef = useRef(null);
     const animation = Animations[Math.floor(Math.random() * Animations.length)]
     console.log('====================================');
     console.log(Math.floor(Math.random() * Animations.length), Math.random() * Animations.length, Animations.length);
     console.log('====================================');
 
-    const renderItem = ({ item, index }) => {
-        if (userInfo.role === 'teacher') {
-            return (
-                <ClassItem item={item} index={index} animation={animation} navigation={navigation} />
-            );
-        } else {
-            return (
-                <AssignmentItem item={item} index={index} animation={animation} navigation={navigation} />
-            );
-        }
-    }
-
-
-
-    const [classes, setClasses] = useState([]);
-    const [assignments, setAssignments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { userInfo } = useContext(AuthContext);
-
     useEffect(() => {
-        // Fetch the assignments from the API with the bearer token
+        const { formationId, classId } = route.params;
         const token = AsyncStorage.getItem('userToken');
         const axiosInstance = axios.create({
             baseURL: BASE_URL,
@@ -146,31 +90,18 @@ const Assignment = ({ navigation }) => {
             }
         });
 
-        if (userInfo.role === 'teacher') {
-            axiosInstance.get(`/formations/${userInfo.details._id}/classes`)
-                .then(response => {
-                    console.log("API Response (Teacher):", response.data);
-                    setClasses(response.data);
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.error(error);
-                    setLoading(false);
-                });
-        } else {
-            axiosInstance.get(`/formations/${userInfo.details._id}/level-content`)
-                .then(response => {
-                    console.log("API Response (intern):", response.data);
-                    setAssignments(response.data.assignments);
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.error(error);
-                    setLoading(false);
-                });
-        }
-    }, []);
+        axiosInstance.get(`/formations/classes/${formationId}/${classId}`)
+            .then(response => {
+                console.log("API Response Class assignments :", response.data);
+                setAssignments(response.data.assignments); // Assignments are inside "assignments" key
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error(error);
+                setLoading(false);
+            });
 
+    }, []);
 
     if (loading) {
         return (
@@ -179,12 +110,27 @@ const Assignment = ({ navigation }) => {
             </View>
         );
     }
+
+
+
+
+    const renderItem = ({ item, index }) => {
+
+        return  <AssignmentItem item={item} index={index} animation={animation} navigation={navigation} />
+    }
+
+
+
+
+
+
+
     const ListEmptyComponent = () => {
         const anim = {
             0: { translateY: 0 },
             0.5: { translateY: 50 },
             1: { translateY: 0 },
-        }
+        };
         if (assignments.length === 0) {
             return (
                 <View style={[styles.listEmpty]}>
@@ -193,12 +139,14 @@ const Assignment = ({ navigation }) => {
                         easing="ease-in-out"
                         duration={3000}
                         style={{ fontSize: 24 }}
-                        iterationCount="infinite">
-                        No assignments available !
+                        iterationCount="infinite"
+                    >
+                        Pas de devoirs publiés !
                     </Animatable.Text>
                 </View>
-            )
+            );
         }
+        return null;
     }
 
 
@@ -251,7 +199,7 @@ const Assignment = ({ navigation }) => {
                     duration={500}
                 >
                     <FlatList
-                        data={userInfo.role === 'teacher' ? classes : assignments}
+                        data={assignments}
                         keyExtractor={(_, i) => String(i)}
                         numColumns={2}
                         renderItem={renderItem}
@@ -265,7 +213,7 @@ const Assignment = ({ navigation }) => {
 
     )
 }
-export default Assignment;
+export default AssignmentByClass;
 const styles = StyleSheet.create({
     container: {
         flex: 1,

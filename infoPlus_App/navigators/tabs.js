@@ -20,6 +20,7 @@ import AssignmentDetail from '../screens/Assignments/AssignmentDetail';
 import Announcement from '../screens/Announcement';
 import Search from '../screens/Search';
 import AttendanceList from '../screens/Attendance/AttendanceList';
+import AssignmentByClass from '../screens/Assignments/AssignmentByClass';
 
 
 const Tab = createBottomTabNavigator();
@@ -120,6 +121,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="AttendanceList"
                 component={AttendanceList}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="AssignmentByClass"
+                component={AssignmentByClass}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

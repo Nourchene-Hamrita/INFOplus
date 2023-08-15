@@ -298,6 +298,7 @@ const styles = StyleSheet.create({
     },
     userInfoSection: {
         paddingHorizontal: 30,
+        paddingVertical:10,
         marginBottom: 25,
     },
     loadingContainer: {

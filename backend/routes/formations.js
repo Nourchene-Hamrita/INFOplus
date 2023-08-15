@@ -48,9 +48,9 @@ router.put(
 );
 router.post("/:formationId/classes/:className/announcements", protect, createAnnouncement);
 
-router.get("/classes/:formationId/:classId", getClassById);
+router.get("/classes/:formationId/:classId", verifyToken, getClassById);
 
-router.get("/:teacherId/classes", getClassesByTeacher);
+router.get("/:teacherId/classes", verifyToken, getClassesByTeacher);
 router.get("/:formationId/classes/:className/assignments", getClassAssignments);
 router.get("/:formationId/classes/:className/:assignmentId", getAssignmentById);
 router.get("/:formationId/class/:className/announcements", getClassAnnouncements);
@@ -58,7 +58,7 @@ router.get("/:formationId/class/:className/announcements", getClassAnnouncements
 
 
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
-router.get('/:formationId/:classId/attendance-summary',verifyToken, getInternsAttendanceSummary);
+router.get('/:formationId/:classId/attendance-summary', verifyToken, getInternsAttendanceSummary);
 
 
 export default router;
