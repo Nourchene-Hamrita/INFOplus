@@ -116,7 +116,7 @@ const AssignmentByClass = ({ navigation }) => {
 
     const renderItem = ({ item, index }) => {
 
-        return  <AssignmentItem item={item} index={index} animation={animation} navigation={navigation} />
+        return <AssignmentItem item={item} index={index} animation={animation} navigation={navigation} />
     }
 
 

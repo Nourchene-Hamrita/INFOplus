@@ -1,16 +1,29 @@
 import React, { useEffect, useRef, useContext, useState } from 'react'
 import { Dimensions, FlatList, StyleSheet, Text, ActivityIndicator, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import * as Animatable from 'react-native-animatable'
-import { Animations } from '../constants/Animations'
+import { Animations } from '../../constants/Animations'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { COLORS, FONTS } from '../constants';
-import { AuthContext } from '../context/AuthContext';
-import useFetch from '../hooks/useFetch';
-import { BASE_URL } from '../utils/config';
-import { formatDate } from '../utils/date';
+import { COLORS, FONTS } from '../../constants';
+import { AuthContext } from '../../context/AuthContext';
+import useFetch from '../../hooks/useFetch';
+import { BASE_URL } from '../../utils/config';
+import { formatDate } from '../../utils/date';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Feather';
 
+const colorAr = [
+    '#637aff',
+    '#60c5a8',
+    '#CCCCCC',
+    '#ff5454',
+    '#039a83',
+    '#dcb834',
+    '#8f06e4',
+    'skyblue',
+    '#ff4c98',
+]
+const bgColor = (i) => colorAr[i % colorAr.length];
 
 const AnnouncementItem = ({ item: { title, content, teacher, createdAt }, index, animation }) => {
     return (
@@ -33,10 +46,49 @@ const AnnouncementItem = ({ item: { title, content, teacher, createdAt }, index,
             </TouchableOpacity>
         </Animatable.View>
     );
-}
+};
+const ClassItem = ({ item, index, animation, navigation }) => {
+    return (
+        <Animatable.View
+            animation={animation}
+            duration={1000}
+            delay={index * 300}
+        >
+            <View style={styles.listItem}>
+                <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => navigation.navigate('AnnouncementByClass',
+                        {
+                            formationId: item.formationId,
+                            classId: item.classId,
+
+                        })}>
+
+                    <View style={[styles.image, { backgroundColor: bgColor(index) }]}>
+                        <Text style={styles.subjectText}>{item.className}</Text>
+                    </View>
+
+                </TouchableOpacity>
+                <View style={styles.detailsContainer}>
+                    <Text style={styles.fileText} numberOfLines={1}>{item.level}</Text>
+                    <Icon name="more-vertical" size={20} color={COLORS.black} onPress={() => navigation.navigate('AssignmentDetail', {
+                        formationId: item.formation.id,
+                        className: item.class.name,
+                        assignmentId: item._id
+                    })} />
+
+                </View>
+
+
+            </View>
+        </Animatable.View>
+    )
+};
+
 
 export default function Announcement({ route, navigation }) {
     const [announcements, setAnnouncements] = useState([]);
+    const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(true);
     const { userInfo } = useContext(AuthContext);
 
@@ -47,31 +99,50 @@ export default function Announcement({ route, navigation }) {
 
     useEffect(() => {
         // Fetch the assignments from the API with the bearer token
-        const fetchData = async () => {
-            try {
-                const token = await AsyncStorage.getItem('userToken');
-                const axiosInstance = axios.create({
-                    baseURL: BASE_URL,
-                    headers: {
-                        'authorization': `Bearer ${token}`
-                    }
-                });
-
-                const response = await axiosInstance.get(`/formations/${userInfo.details._id}/level-content`);
-                console.log("API Response:", response.data);
-                setAnnouncements(response.data.announcements);
-                setLoading(false);
-            } catch (error) {
-                console.error(error);
-                setLoading(false);
+        const token = AsyncStorage.getItem('userToken');
+        const axiosInstance = axios.create({
+            baseURL: BASE_URL,
+            headers: {
+                'authorization': `Bearer ${token}`
             }
-        };
+        });
 
-        fetchData();
+        if (userInfo.role === 'teacher') {
+            axiosInstance.get(`/formations/${userInfo.details._id}/classes`)
+                .then(response => {
+                    console.log("API Response (Teacher):", response.data);
+                    setClasses(response.data);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error(error);
+                    setLoading(false);
+                });
+        } else {
+            axiosInstance.get(`/formations/${userInfo.details._id}/level-content`)
+                .then(response => {
+                    console.log("API Response (intern):", response.data);
+                    setAnnouncements(response.data.announcements);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error(error);
+                    setLoading(false);
+                });
+        }
     }, [userInfo.details._id]);
 
-    const renderItem = ({ item, index }) => (
-        <AnnouncementItem item={item} index={index} animation={animation} />)
+    const renderItem = ({ item, index }) => {
+        if (userInfo.role === 'teacher') {
+            return (
+                <ClassItem item={item} index={index} animation={animation} navigation={navigation} />
+            );
+        } else {
+            return (
+                <AnnouncementItem item={item} index={index} animation={animation} navigation={navigation} />
+            );
+        }
+    }
 
     const ListEmptyComponent = () => {
         const anim = {
@@ -137,8 +208,9 @@ export default function Announcement({ route, navigation }) {
                     easing={'ease-in-out'}
                     duration={500}>
                     <FlatList
-                        data={announcements}
+                        data={userInfo.role === 'teacher' ? classes : announcements}
                         keyExtractor={(_, i) => String(i)}
+
                         renderItem={renderItem}
                         showsVerticalScrollIndicator={false}
                         ItemSeparatorComponent={ItemSeparator}
@@ -225,6 +297,46 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    image: {
+        height: 150,
+        margin: 5,
+        borderRadius: 10,
+        backgroundColor: COLORS.primary,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    fileText: {
+        color: COLORS.primary,
+        fontSize: 16,
+    },
+    subjectText: {
+        color: COLORS.white,
+        fontSize: 18,
+
+    },
+    detailsContainer: {
+        paddingHorizontal: 16,
+        paddingVertical: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    listItem: {
+        height: 200,
+        width: Dimensions.get('window').width*0.9,
+        backgroundColor: 'white',
+        margin: 15,
+        borderRadius: 10,
+        shadowColor: COLORS.primary,
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5
     },
 
 });

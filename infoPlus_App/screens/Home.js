@@ -75,10 +75,10 @@ const Home = ({ navigation }) => {
 
         {
             id: 5,
-            icon: icons.bill,
+            icon: userInfo.role === 'teacher' ? icons.info : icons.bill,
             color: COLORS.white,
             backgroundColor: COLORS.blue,
-            description: "Paiement"
+            description: userInfo.role === 'teacher' ? "Annonces" : "Paiement"
         },
         {
             id: 6,
