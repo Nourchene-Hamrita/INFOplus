@@ -462,13 +462,13 @@ export const createAnnouncement = asyncHandler(async (req, res) => {
 
         await formation.save();
 
-
-
-        res.status(201).json(formation);
+        // Return the newly added announcement
+        res.status(201).json(announcement);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+
 
 // Get Assignments for a Class
 export const getClassAssignments = asyncHandler(async (req, res) => {
@@ -753,4 +753,74 @@ export const getInternsAttendanceSummary = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+// Delete an Assignment from a Class
+export const deleteAssignment = asyncHandler(async (req, res) => {
+    const { formationId, className, assignmentId } = req.params;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        const assignmentIndex = classInfo.assignments.findIndex(assignment => assignment._id.toString() === assignmentId);
+
+        if (assignmentIndex === -1) {
+            res.status(404).json({ message: "Assignment not found in class" });
+            return;
+        }
+
+        classInfo.assignments.splice(assignmentIndex, 1); // Remove assignment from the array
+        await formation.save();
+
+        res.status(200).json({ message: "Assignment deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete an Announcement from a Class
+export const deleteAnnouncement = asyncHandler(async (req, res) => {
+    const { formationId, className, announcementId } = req.params;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            res.status(404).json({ message: "Formation not found" });
+            return;
+        }
+
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            res.status(404).json({ message: "Class not found in formation" });
+            return;
+        }
+
+        const announcementIndex = classInfo.announcements.findIndex(announcement => announcement._id.toString() === announcementId);
+
+        if (announcementIndex === -1) {
+            res.status(404).json({ message: "Announcement not found in class" });
+            return;
+        }
+
+        classInfo.announcements.splice(announcementIndex, 1); // Remove announcement from the array
+        await formation.save();
+
+        res.status(200).json({ message: "Announcement deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 

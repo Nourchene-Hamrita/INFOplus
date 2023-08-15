@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import DetailEvent from '../screens/Events/DetailEvent';
 import Profile from '../screens/Profile';
 import TimeTable from '../screens/TimeTable';
-import Result from '../screens/Result';
+import Result from '../screens/Results/Result';
 import Assignment from '../screens/Assignments/Assignment';
 import Paiement from '../screens/Paiement';
 import Rate from '../screens/Rate';
@@ -22,6 +22,7 @@ import Search from '../screens/Search';
 import AttendanceList from '../screens/Attendance/AttendanceList';
 import AssignmentByClass from '../screens/Assignments/AssignmentByClass';
 import AnnouncementByClass from '../screens/Announcements/AnnouncementByClass';
+import AddAnnouncement from '../screens/Announcements/AddAnnouncement';
 
 
 const Tab = createBottomTabNavigator();
@@ -147,6 +148,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="AnnouncementByClass"
                 component={AnnouncementByClass}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="AddAnnouncement"
+                component={AddAnnouncement}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

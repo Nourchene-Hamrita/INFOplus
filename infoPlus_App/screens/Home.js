@@ -124,7 +124,11 @@ const Home = ({ navigation }) => {
                 navigation.navigate('Result');
                 break;
             case 5:
-                navigation.navigate('Paiement');
+                if (userInfo.role === 'teacher') {
+                    navigation.navigate('AddAnnouncement'); // Navigate to AttendanceList for teachers
+                } else {
+                    navigation.navigate('Paiement'); // Navigate to default Attendance screen
+                }
                 break;
             case 6:
                 navigation.navigate('Rate');

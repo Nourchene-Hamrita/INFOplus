@@ -357,6 +357,36 @@ export const getStudentReport = async (req, res) => {
         });
     }
 };
+// Retrieve results published by a specific teacher
+export const getResultsByTeacher = async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+
+        // Find results published by the specified teacher and populate intern and formation fields
+        const results = await Result.find({ teacher: teacherId })
+            .populate({
+                path: 'intern',
+                select: 'firstName lastName login',
+            }).populate({
+                path: 'formation',
+                select: 'nom',
+            });
+
+        if (!results || results.length === 0) {
+            return res
+                .status(404)
+                .json({ message: "No results found for this teacher" });
+        }
+
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).json({
+            message: "Error retrieving results",
+            error: error.message,
+        });
+    }
+};
+
 
 
 

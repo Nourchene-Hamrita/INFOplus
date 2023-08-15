@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Tabs from './tabs';
 import { Home } from '../screens';
 import Profile from '../screens/Profile';
-import Result from '../screens/Result';
+import Result from '../screens/Results/Result';
 import Reclamation from '../screens/Reclamations/Reclamation';
 import ReclamationList from '../screens/Reclamations/ReclamationsList';
 
