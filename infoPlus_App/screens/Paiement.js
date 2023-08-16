@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, SafeAreaView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Dimensions, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import {
     Avatar,
     Title,
@@ -299,6 +299,7 @@ const styles = StyleSheet.create({
     userInfoSection: {
         paddingHorizontal: 30,
         paddingVertical:10,
+        
         marginBottom: 25,
     },
     loadingContainer: {
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#dddddd',
         borderTopWidth: 1,
         flexDirection: 'row',
-        height: 120,
+       
     },
     infoBox: {
         width: '50%',

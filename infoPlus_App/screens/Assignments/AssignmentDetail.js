@@ -327,13 +327,13 @@ const AssignmentDetail = ({ navigation }) => {
                         <Text style={{ color: COLORS.red }}>Date limite : </Text>
                         <Text style={{ color: COLORS.darkgray }}>{formatDate(assignmentDetails.dueDate)}</Text>
                     </View>
-                    <Entypo
+                    {/* <Entypo
                         name="chevron-right"
                         style={{
                             fontSize: 22,
                             color: COLORS.lightRed,
                         }}
-                    />
+                    /> */}
                 </View>
                 <View
                     style={{

@@ -23,7 +23,8 @@ import {
   getClassesByTeacher,
   getClassById,
   deleteAssignment,
-  deleteAnnouncement
+  deleteAnnouncement,
+  getClassInterns
 } from "../controllers/formation.js"
 import { protect, verifyToken } from "../utils/verifyToken.js";
 
@@ -48,7 +49,7 @@ router.put(
   '/:formationId/classes/:className',
   updateClass
 );
-router.post("/:formationId/classes/:className/announcements", verifyToken, createAnnouncement);
+router.post("/:formationId/classes/:className/announcements", protect, createAnnouncement);
 
 router.get("/classes/:formationId/:classId", verifyToken, getClassById);
 
@@ -56,6 +57,7 @@ router.get("/:teacherId/classes", verifyToken, getClassesByTeacher);
 router.get("/:formationId/classes/:className/assignments", getClassAssignments);
 router.get("/:formationId/classes/:className/:assignmentId", getAssignmentById);
 router.get("/:formationId/class/:className/announcements", getClassAnnouncements);
+router.get("/:formationId/class/:className/interns", getClassInterns);
 
 
 

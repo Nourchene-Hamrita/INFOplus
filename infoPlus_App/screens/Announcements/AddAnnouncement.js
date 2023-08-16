@@ -53,6 +53,7 @@ export default function AddAnnouncement({ route, navigation }) {
                 {
                     title: title,
                     content: content,
+                    teacher:userInfo.details._id
                 },
                 {
                     headers: {

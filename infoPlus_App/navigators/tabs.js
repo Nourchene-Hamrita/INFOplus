@@ -23,6 +23,7 @@ import AttendanceList from '../screens/Attendance/AttendanceList';
 import AssignmentByClass from '../screens/Assignments/AssignmentByClass';
 import AnnouncementByClass from '../screens/Announcements/AnnouncementByClass';
 import AddAnnouncement from '../screens/Announcements/AddAnnouncement';
+import InternsList from '../screens/InternsList';
 
 
 const Tab = createBottomTabNavigator();
@@ -178,6 +179,11 @@ const HomeStack = () => {
             <Stack.Screen
                 name="ReclamationList"
                 component={ReclamationList}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="InternsList"
+                component={InternsList}
                 options={{ headerShown: false }}
             />
            

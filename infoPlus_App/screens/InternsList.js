@@ -1,44 +1,33 @@
 import React, { useEffect, useRef, useContext } from 'react'
 import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import * as Animatable from 'react-native-animatable'
-import { Animations } from '../../constants/Animations'
+import { Animations } from '../constants/Animations'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { COLORS } from '../../constants';
-import { AuthContext } from '../../context/AuthContext';
-import useFetch from '../../hooks/useFetch';
-import { BASE_URL } from '../../utils/config';
-import { formatDate } from '../../utils/date';
+import { COLORS } from '../constants';
+import { AuthContext } from '../context/AuthContext';
+import useFetch from '../hooks/useFetch';
+import { BASE_URL } from '../utils/config';
+import { formatDate } from '../utils/date';
+import { useRoute } from '@react-navigation/native';
 
-const ReclamationItem = ({ item: { subject, description, state, date }, index, animation }) => {
-    let stateText = "";
-    let stateColor = COLORS.gray; // Default color
+const InternItem = ({ item: { _id,intern ,email}, index, animation }) => {
 
-    if (state === "Pending") {
-        stateText = "En attente";
-        stateColor = COLORS.red;
-    } else if (state === "In Progress") {
-        stateText = "En cours";
-        stateColor = COLORS.blue;
-    } else if (state === "Resolved") {
-        stateText = "Résolu";
-        stateColor = COLORS.green;
-    }
 
 
     return (
         <Animatable.View animation={animation} duration={1000} delay={index * 300}>
             <TouchableOpacity style={styles.item}>
                 <View style={styles.avatar}>
-                    <Text style={styles.letter}>{subject.slice(0, 1).toUpperCase()}</Text>
+                    <Text style={styles.letter}>{intern.slice(0, 1).toUpperCase()}</Text>
                 </View>
                 <View style={styles.details}>
                     <View style={styles.rowContainer}>
-                        <Text style={styles.name}>{subject}</Text>
-                        <Text style={[styles.number, { color: stateColor }]}>{stateText}</Text>
+                        <Text style={styles.name}>{intern}</Text>
+                       
                     </View>
                     <View style={{ flexDirection: 'column' }}>
-                        <Text numberOfLines={1}>{description}</Text>
-                        <Text >{formatDate(date)}</Text>
+                        <Text numberOfLines={1}>{email}</Text>
+                        
                     </View>
                 </View>
             </TouchableOpacity>
@@ -46,10 +35,12 @@ const ReclamationItem = ({ item: { subject, description, state, date }, index, a
     );
 }
 
-export default function ReclamationList({ route, navigation }) {
+export default function InternsList({ navigation }) {
     const { userInfo } = useContext(AuthContext);
+    const route = useRoute();
+    const { formationId, classId,className } = route.params;
     const { data, loading, error } = useFetch(
-        `${BASE_URL}/reclamations/getReclamationsByUserId/${userInfo.details._id}`
+        `${BASE_URL}/formations/${formationId}/class/${className}/interns`
     );
     console.log(data)
     const viewRef = useRef(null);
@@ -58,7 +49,7 @@ export default function ReclamationList({ route, navigation }) {
     const ItemSeparator = () => <View style={styles.separator} />
 
     const renderItem = ({ item, index }) => (
-        <ReclamationItem item={item} index={index} animation={animation} />)
+        <InternItem item={item} index={index} animation={animation} />)
 
     const ListEmptyComponent = () => {
         const anim = {
@@ -102,7 +93,7 @@ export default function ReclamationList({ route, navigation }) {
                     />
                 </TouchableOpacity>
                 <View style={{ flex: 1, alignItems: 'center', marginRight: 20 }}>
-                    <Text style={styles.headerText}>Mes Réclamations</Text>
+                    <Text style={styles.headerText}>Les Stagiaires</Text>
                 </View>
 
             </View>

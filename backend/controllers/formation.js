@@ -392,7 +392,7 @@ export const createAssignment = asyncHandler(async (req, res) => {
 
         // Generate attachment URL based on your URL generation logic using the assignment's _id
         if (addedAssignment.attachmentOriginalName && addedAssignment.attachment) {
-            addedAssignment.attachmentUrl = `${BASE_URL}assignments/${formationId}/classes/${className}/assignments/${addedAssignment._id}/attachment`;
+            addedAssignment.attachmentUrl = `${BASE_URL}/assignments/${formationId}/classes/${className}/assignments/${addedAssignment._id}/attachment`;
             // Remove the attachment field from the assignment object
             delete addedAssignment.attachment;
         }
@@ -597,6 +597,44 @@ export const getClassAnnouncements = asyncHandler(async (req, res) => {
         res.status(200).json(announcementsWithTeacher);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+export const getClassInterns = asyncHandler(async (req, res) => {
+    const { formationId, className } = req.params;
+
+    try {
+        const formation = await Formation.findById(formationId);
+
+        if (!formation) {
+            return res.status(404).json({ message: "Formation not found" });
+        }
+
+        const classInfo = formation.classes.find(cls => cls.name === className);
+
+        if (!classInfo) {
+            return res.status(404).json({ message: "Class not found in formation" });
+        }
+
+        // Populate intern information before sending the response
+        await Formation.populate(classInfo, { path: 'interns.intern' });
+
+        const filteredInterns = classInfo.interns.map(async ({ _id, intern,email }) => {
+            // Fetch the intern's details from the database
+            const internDetails = await User.findById(intern);
+
+            return {
+                _id,
+                intern: internDetails ? `${internDetails.firstName} ${internDetails.lastName}` : null,
+                email: internDetails ? `${internDetails.email}` : null,
+            };
+        });
+
+        // Wait for all intern details to be fetched
+        const internsWithDetails = await Promise.all(filteredInterns);
+
+        return res.status(200).json(internsWithDetails);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 });
 

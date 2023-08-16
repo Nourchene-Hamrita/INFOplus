@@ -35,7 +35,9 @@ const ListItem = ({ item, index, animation, navigation }) => {
                     activeOpacity={0.7}
                     onPress={() => openPdf(item.pdfUrl)}>
 
-                    <View style={[styles.image, { backgroundColor: bgColor(index) }]} />
+                    <View style={[styles.image, { backgroundColor: bgColor(index) }]}>
+                       <Text style={styles.levelText}>{item.level}</Text>
+                    </View>
 
                 </TouchableOpacity>
                 <View style={styles.detailsContainer}>
@@ -219,6 +221,8 @@ const styles = StyleSheet.create({
         margin: 5,
         borderRadius: 10,
         backgroundColor: COLORS.primary,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     detailsContainer: {
         paddingHorizontal: 16,
@@ -226,6 +230,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    levelText: {
+        color: COLORS.white,
+        fontSize: 15,
+
     },
 
 });

@@ -262,7 +262,7 @@ const Result = ({ navigation }) => {
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
                                             <Text style={{ ...FONTS.h5, color: COLORS.white }}>Moyenne Finale </Text>
 
-                                            <Text style={{ ...FONTS.h5, color: COLORS.white }}> Total </Text>
+                                            <Text style={{ ...FONTS.h5, color: COLORS.white }}>  {(((parseFloat(record.scores[0].note_examen) * 2) + parseFloat(record.scores[0].note_tp) + parseFloat(record.scores[0].note_cc)) / 4).toFixed(2)} </Text>
 
                                             {/* {record.isPresent === true ?
                                                     <Text style={{ ...FONTS.h4, color: COLORS.white }}>Présent(e)</Text> :
@@ -435,14 +435,14 @@ const Result = ({ navigation }) => {
                                         />
                                         <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Taux de d'échec:  {100 - resultSummary.successRate}%</Text>
                                     </View>
-                                    <View style={styles.row}>
+                                    {/* <View style={styles.row}>
                                         <Feather
                                             name="pie-chart"
                                             color={COLORS.white}
                                             size={18}
                                         />
                                         <Text style={{ ...FONTS.h4, color: COLORS.white, marginLeft: 5 }}>Taux de réussite:  {resultSummary.successRate}%</Text>
-                                    </View>
+                                    </View> */}
 
                                 </View>
                             ) : (
@@ -522,7 +522,9 @@ const Result = ({ navigation }) => {
                                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 5 }}>
                                                     <Text style={{ ...FONTS.h5, color: COLORS.white }}>Moyenne Finale </Text>
 
-                                                    <Text style={{ ...FONTS.h5, color: COLORS.white }}> Total </Text>
+                                                    <Text style={{ ...FONTS.h5, color: COLORS.white }}>
+                                                        {(((parseFloat(record.scores[0].note_examen) * 2) + parseFloat(record.scores[0].note_tp) + parseFloat(record.scores[0].note_cc)) / 4).toFixed(2)}
+                                                    </Text>
 
                                                     {/* {record.isPresent === true ?
                                                     <Text style={{ ...FONTS.h4, color: COLORS.white }}>Présent(e)</Text> :
@@ -534,7 +536,7 @@ const Result = ({ navigation }) => {
                                             </LinearGradient>
 
                                             <View
-                                                style={{ // Render a placeholder view if eventPicture is null
+                                                style={{
                                                     width: "100%",
                                                     height: "100%",
                                                     borderTopLeftRadius: 20,

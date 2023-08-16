@@ -72,10 +72,11 @@ const ClassItem = ({ item, index, animation, navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.detailsContainer}>
                     <Text style={styles.fileText} numberOfLines={1}>{item.level}</Text>
-                    <Icon name="more-vertical" size={20} color={COLORS.black} onPress={() => navigation.navigate('AssignmentDetail', {
-                        formationId: item.formation.id,
-                        className: item.class.name,
-                        assignmentId: item._id
+                    <Icon name="more-vertical" size={20} color={COLORS.black} onPress={() => navigation.navigate('InternsList', {
+                        formationId: item.formationId,
+                        classId: item.classId,
+                        className: item.className
+                    
                     })} />
 
                 </View>
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
     details: {
         flex: 1,
         justifyContent: 'space-between',
-        margin: 10
+        margin: 8
     },
     rowContainer: {
         flexDirection: 'row',
