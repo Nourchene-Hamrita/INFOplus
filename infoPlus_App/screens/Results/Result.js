@@ -623,11 +623,11 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 3,
-        height: 600,
+        height: Dimensions.get('window').height,
         backgroundColor: '#fff',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        paddingVertical: 10,
+        paddingVertical: 20,
         paddingHorizontal: 20,
 
     },

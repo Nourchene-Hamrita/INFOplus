@@ -119,7 +119,7 @@ const Attendance = ({ navigation }) => {
                 <View style={{ flex: 1, alignItems: 'center' }}>
                     <Text style={{
                         color: COLORS.white,
-                        fontSize: 20,
+                        fontSize: 25,
                         fontWeight: '600',
                         paddingRight: 30
                     }}>Mes Absences</Text>
@@ -350,10 +350,11 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 3,
+        height: Dimensions.get('window').height,
         backgroundColor: '#fff',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        paddingVertical:50,
+        paddingVertical:20,
         paddingHorizontal: 20,
 
     },
