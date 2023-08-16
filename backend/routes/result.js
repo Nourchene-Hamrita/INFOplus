@@ -1,7 +1,7 @@
 import express from "express";
 
-import { addResult, getResultByFormation, getResultInternFormation, getResultsByTeacher, getStudentReport, searchResult, searchResults, searchSubjectResults, updateResult } from "../controllers/result.js";
-import { protect, verifyAdmin } from "../utils/verifyToken.js";
+import { addResult, deleteResult, getResultByFormation, getResultInternFormation, getResultsByTeacher, getStudentReport, searchResult, searchResults, searchSubjectResults, updateResult } from "../controllers/result.js";
+import { protect, verifyAdmin, verifyToken } from "../utils/verifyToken.js";
 
 
 
@@ -20,8 +20,8 @@ router.put(
 );
 router.delete(
     "/delete/:id",
-    verifyAdmin,
-    updateResult
+    verifyToken,
+    deleteResult
 );
 router.get(
     "/getResultByFormation/:formationId", getResultByFormation

@@ -34,7 +34,7 @@ const openFile = (attachmentUrl) => {
     // Open the PDF in a full-screen viewer using Linking
     Linking.openURL(attachmentUrl);
 };
-const AssignmentItem = ({ item, index, animation, navigation }) => {
+const AssignmentItem = ({ item, index, animation, navigation ,formationId,className}) => {
     return (
         <Animatable.View
             animation={animation}
@@ -56,8 +56,8 @@ const AssignmentItem = ({ item, index, animation, navigation }) => {
                         size={20}
                         color={COLORS.black}
                         onPress={() => navigation.navigate('AssignmentDetail', {
-                            formationId: item.formation.id,
-                            className: item.class.name,
+                            formationId:formationId,
+                            className: className,
                             assignmentId: item._id
                         })}
                     />
@@ -72,6 +72,7 @@ const AssignmentItem = ({ item, index, animation, navigation }) => {
 
 const AssignmentByClass = ({ navigation }) => {
     const route = useRoute();
+    const { formationId, classId,className } = route.params;
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
     const viewRef = useRef(null);
@@ -81,7 +82,7 @@ const AssignmentByClass = ({ navigation }) => {
     console.log('====================================');
 
     useEffect(() => {
-        const { formationId, classId } = route.params;
+        
         const token = AsyncStorage.getItem('userToken');
         const axiosInstance = axios.create({
             baseURL: BASE_URL,
@@ -116,7 +117,13 @@ const AssignmentByClass = ({ navigation }) => {
 
     const renderItem = ({ item, index }) => {
 
-        return <AssignmentItem item={item} index={index} animation={animation} navigation={navigation} />
+        return <AssignmentItem 
+        item={item} 
+        index={index} 
+        animation={animation} 
+        navigation={navigation}  
+        formationId={formationId}
+        className={className} />
     }
 
 

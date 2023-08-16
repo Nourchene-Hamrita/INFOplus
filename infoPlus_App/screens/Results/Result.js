@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import { Text } from 'react-native-animatable';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { COLORS, FONTS, SIZES } from '../../constants';
@@ -10,10 +10,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { BASE_URL } from '../../utils/config';
 import { AuthContext } from '../../context/AuthContext';
 import { ActivityIndicator } from 'react-native-paper';
-import { convertDate, formatDate } from '../../utils/date';
+import { convertDate } from '../../utils/date';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
+
 
 const Result = ({ navigation }) => {
     const { userInfo } = useContext(AuthContext);
@@ -120,6 +124,46 @@ const Result = ({ navigation }) => {
     const screenWidth = Dimensions.get('window').width;
     const buttonWidth = screenWidth * 0.8;
     const comboBoxWidth = buttonWidth * 0.8;
+
+
+    const deleteResult = async (resultId) => {
+
+        Alert.alert(
+            'Confirmation',
+            'Voulez-vous vraiment supprimer ce résultat ?',
+            [
+                {
+                    text: 'Annuler',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Supprimer',
+                    onPress: async () => {
+                        try {
+                            const token = await AsyncStorage.getItem('userToken');
+
+                            const axiosInstance = axios.create({
+                                baseURL: BASE_URL,
+                                headers: {
+                                    'authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            const response = await axiosInstance.delete(`/results/delete/${resultId}`);
+
+                            if (response.status === 200) {
+                                fetchTeacherResults();
+                            }
+
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
+                }
+            ]
+        );
+
+    };
     return (
         <ScrollView style={styles.container}>
             <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
@@ -164,7 +208,7 @@ const Result = ({ navigation }) => {
                             }}>
                                 <View
                                     style={{
-                                        height: 200,
+                                        height: 210,
                                         borderTopLeftRadius: 20,
                                         borderTopRightRadius: 20,
                                         backgroundColor: COLORS.primary,
@@ -263,7 +307,7 @@ const Result = ({ navigation }) => {
                                         <Animatable.View
                                             animation="bounceIn"
                                         >
-                                            <TouchableOpacity>
+                                            <TouchableOpacity onPress={() => deleteResult(record._id)}>
                                                 <Feather
                                                     name="trash"
                                                     color="red"
@@ -579,10 +623,11 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 3,
+        height: 600,
         backgroundColor: '#fff',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        paddingVertical: 20,
+        paddingVertical: 10,
         paddingHorizontal: 20,
 
     },
