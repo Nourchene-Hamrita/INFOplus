@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useContext, useState } from 'react'
-import { Dimensions, FlatList, StyleSheet, Text, ActivityIndicator, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Dimensions, FlatList, StyleSheet, Text, Alert, ActivityIndicator, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import * as Animatable from 'react-native-animatable'
 import { Animations } from '../../constants/Animations'
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -26,8 +26,40 @@ const colorAr = [
 ]
 const bgColor = (i) => colorAr[i % colorAr.length];
 
-const AnnouncementItem = ({ item: { title, content, teacher, createdAt }, index, animation }) => {
+const AnnouncementItem = ({ item: { _id, title, content, createdAt }, index, animation, formationId, className, onUpdateAnnouncements }) => {
     const { userInfo } = useContext(AuthContext);
+
+    const handleDelete = () => {
+        Alert.alert(
+            'Confirmation',
+            'Êtes-vous sûr de vouloir supprimer cette annonce ?',
+            [
+                { text: 'Annuler', style: 'cancel' },
+                { text: 'Supprimer', onPress: confirmDelete },
+            ]
+        );
+    };
+
+    const confirmDelete = async () => {
+        try {
+            const token = await AsyncStorage.getItem('userToken');
+            const axiosInstance = axios.create({
+                baseURL: BASE_URL,
+                headers: {
+                    'authorization': `Bearer ${token}`
+                }
+            });
+
+            const response = await axiosInstance.delete(`/formations/${formationId}/classes/${className}/announcements/${_id}`);
+            if (response.status === 200) {
+                onUpdateAnnouncements();
+            }
+        } catch (error) {
+            console.error(error);
+            // Handle error
+        }
+    };
+
     return (
         <Animatable.View animation={animation} duration={1000} delay={index * 300}>
             <TouchableOpacity style={styles.item}>
@@ -44,10 +76,10 @@ const AnnouncementItem = ({ item: { title, content, teacher, createdAt }, index,
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text numberOfLines={1}>{content}</Text>
-                            <Icon name="trash" size={20} color={COLORS.red} />
+                            <TouchableOpacity onPress={handleDelete}>
+                                <Icon name="trash" size={20} color={COLORS.red} />
+                            </TouchableOpacity>
                         </View>
-
-
                     </View>
                 </View>
             </TouchableOpacity>
@@ -58,6 +90,9 @@ const AnnouncementItem = ({ item: { title, content, teacher, createdAt }, index,
 
 export default function AnnouncementByClass({ navigation }) {
     const route = useRoute();
+    const formationId = route.params?.formationId; // Get formationId from route params
+    const classId = route.params?.classId;
+    const className = route.params?.className;
     const [announcements, setAnnouncements] = useState([]);
 
     const [loading, setLoading] = useState(true);
@@ -67,16 +102,15 @@ export default function AnnouncementByClass({ navigation }) {
     const animation = Animations[Math.floor(Math.random() * Animations.length)]
     console.log(animation);
     const ItemSeparator = () => <View style={styles.separator} />
+    const token = AsyncStorage.getItem('userToken');
 
+    const axiosInstance = axios.create({
+        baseURL: BASE_URL,
+        headers: {
+            'authorization': `Bearer ${token}`
+        }
+    });
     useEffect(() => {
-        const { formationId, classId } = route.params;
-        const token = AsyncStorage.getItem('userToken');
-        const axiosInstance = axios.create({
-            baseURL: BASE_URL,
-            headers: {
-                'authorization': `Bearer ${token}`
-            }
-        });
 
         axiosInstance.get(`/formations/classes/${formationId}/${classId}`)
             .then(response => {
@@ -108,11 +142,30 @@ export default function AnnouncementByClass({ navigation }) {
     }
 
 
-
+    const handleUpdateAnnouncements = () => {
+        // Fetch the updated list of announcements from the server and update the state
+        axiosInstance.get(`/formations/classes/${formationId}/${classId}`)
+            .then(response => {
+                console.log("API Response Class assignments :", response.data);
+                setAnnouncements(response.data.announcements);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error(error);
+                setLoading(false);
+            });
+    };
 
     const renderItem = ({ item, index }) => {
 
-        return <AnnouncementItem item={item} index={index} animation={animation} navigation={navigation} />
+        return <AnnouncementItem
+            item={item}
+            index={index}
+            animation={animation}
+            navigation={navigation}
+            formationId={formationId}
+            className={className}
+            onUpdateAnnouncements={handleUpdateAnnouncements} />
     }
 
 

@@ -62,8 +62,8 @@ router.get("/:formationId/class/:className/announcements", getClassAnnouncements
 router.get("/:internId/level-content", verifyToken, getStudentLevelContent);
 router.get('/:formationId/:classId/attendance-summary', verifyToken, getInternsAttendanceSummary);
 
-router.delete('/:formationId/classes/:className/assignments/:assignmentId', deleteAssignment);
-router.delete('/:formationId/classes/:className/announcements/:announcementId', deleteAnnouncement);
+router.delete('/:formationId/classes/:className/assignments/:assignmentId',verifyToken, deleteAssignment);
+router.delete('/:formationId/classes/:className/announcements/:announcementId',verifyToken, deleteAnnouncement);
 
 
 

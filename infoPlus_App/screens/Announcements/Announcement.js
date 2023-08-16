@@ -61,6 +61,7 @@ const ClassItem = ({ item, index, animation, navigation }) => {
                         {
                             formationId: item.formationId,
                             classId: item.classId,
+                            className: item.className
 
                         })}>
 
